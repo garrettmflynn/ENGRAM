@@ -10,8 +10,9 @@ ENGRAM: Enabling Graphical Representation of Active Memories
 Guide
 ^^^^^^^
     .. toctree::
-        :maxdepth: 2
-
+        :maxdepth: 1
+        
+        contents
         license
         help
 
