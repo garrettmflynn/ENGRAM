@@ -1,5 +1,5 @@
 # [Engram](https://github.com/garrettmflynn/Engram)
-*Emerging Neurophysiology for Graphical Representation of Activated Memories (ENGRAM)*
+*ENabling Graphical Representation of Activated Memories (ENGRAM)*
 
 
 ## Introduction
