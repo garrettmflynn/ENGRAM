@@ -16,7 +16,7 @@ This library includes several modules for cortical prosthesis development:
 ``engram.encode`` contains code for managing pipeline processes.
   - Train multi-input multi-output (MIMO) models
   - Train information decoding models
-``engram.represent`` contains code used for visualization.
+``engram.graph`` contains code used for graph visualization.
   - Visualize model weights
 
 These modules should serve as a solid foundation for your own domain-specific prostheses.

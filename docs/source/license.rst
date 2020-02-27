@@ -1,8 +1,6 @@
 
-License
-=========               
-
-GNU GENERAL PUBLIC LICENSE
+GNU General Public License
+===========================               
 Version 3, 29 June 2007
 
 Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/>
@@ -676,8 +674,3 @@ may consider it more useful to permit linking proprietary applications with
 the library.  If this is what you want to do, use the GNU Lesser General
 Public License instead of this License.  But first, please read
 <https://www.gnu.org/licenses/why-not-lgpl.html>.
-
-
-Contact
-==========
-Questions? Please contact garrett@garrettflynn.com
