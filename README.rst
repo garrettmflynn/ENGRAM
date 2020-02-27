@@ -2,15 +2,26 @@
 Engram
 ========
 
-Enabling Graphical Representation of Activated Memories (ENGRAM) is an open-source 
+Summary
+-----------------------------
+Encoding Neurons into Graphical Representations of Activated Memories (ENGRAM) is an open-source 
 Python package for the design of cognitive neural prostheses.
 
-Features
---------
+Organization and Philosophy
+-----------------------------
 
-- Train multi-input multi-output (MIMO) models
-- Train information decoding models
-- Visualize model weights
+This library includes several modules for cortical prosthesis development. These are separated by the level 
+of the prosthesis that they would operate on (e.g. data processing vs UI).
+
+- engram.data contains code for holding and processing data.
+    * Train multi-input multi-output (MIMO) models
+    * Train information decoding models
+- engram.managers contains code for managing pipeline processes.
+- engram.ui contains code used for visualization.
+    * Visualize model weights
+
+Though packaged as a fully-functioning application, ENGRAM should serve as a good foundation for your own 
+domain-specific prostheses.
 
 Installation
 ------------
