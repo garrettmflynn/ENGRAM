@@ -19,8 +19,7 @@ This library includes several modules for cortical prosthesis development:
 ``engram.represent`` contains code used for visualization.
   - Visualize model weights
 
-Though packaged as a fully-functioning application, these ENGRAM modules should serve 
-as a solid foundation for your own domain-specific prostheses.
+These modules should serve as a solid foundation for your own domain-specific prostheses.
 
 Installation
 ------------
