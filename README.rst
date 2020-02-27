@@ -2,7 +2,7 @@
 ENGRAM
 ========
 
-*ENGRAM (Encoding Graphical Representations of Activated Memories) is a
+* **EN**coding **G**raphical **R**epresentations of **A**ctivated **M**emories) is a
 Python package for cognitive neural prostheses.*
 
 Organization and Philosophy
