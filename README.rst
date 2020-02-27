@@ -2,7 +2,7 @@
 ENGRAM
 ========
 
-*Encoding Graphical Representations of Activated Memories (ENGRAM) is an open-source 
+*Encoding Graphical Representations of Activated Memories (ENGRAM) is
 Python package for the design of cognitive neural prostheses.*
 
 Organization and Philosophy
