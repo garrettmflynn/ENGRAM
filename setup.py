@@ -8,7 +8,7 @@ setuptools.setup(
     version="0.0.0",
     author="Garrett Flynn",
     author_email="garrett@garrettflynn.com",
-    description="Emerging Neurophysiology for Graphical Representation of Activated Memories (ENGRAM)",
+    description="Encoding Graphical Representations of Activated Memories (ENGRAM)",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/garrettmflynn/Engram",
