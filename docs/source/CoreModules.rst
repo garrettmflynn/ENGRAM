@@ -3,10 +3,10 @@ Core Modules
 
 This library includes several modules for cortical prosthesis development:
 
-``engram.data`` contains code for containing data.
+``engram.declarative`` contains classes for containing data.
   - Load neural recordings into our nested data structures (Data —> Mnemes —> Engrams —> IDs)
 
-``engram.encode`` contains code for managing pipeline processes.
+``engram.procedural`` contains code for managing pipeline processes.
   - Train multi-input multi-output (MIMO) models
   - Train information decoding models
 
