@@ -1,5 +1,6 @@
 name: engram
 channels:
+  - conda-forge
   - defaults
 dependencies:
   - ca-certificates=2020.1.1=0
