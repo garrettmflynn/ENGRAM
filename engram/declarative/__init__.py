@@ -18,9 +18,10 @@ Classes:
 
 import engram
 from engram.declarative.id import ID
-from mneme.declarative.trace import Trace
-from mneme.declarative.engram import Engram
-from mneme.declarative.mneme import Mneme
+from engram.declarative.trace import Trace
+from engram.declarative.engram import Engram
+from engram.declarative.mneme import Mneme
+from engram.procedural import neo_handler
 
 
 objectlist = [ID,Trace,Engram,Mneme]

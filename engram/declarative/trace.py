@@ -3,12 +3,11 @@ This module defines :class:'Trace'
 """
 
 import sys
-import imutils
 import numpy as np
 import time
 import os
 import neo
-import pickle
+import pickle 
 import datetime
 
 class Trace(object):

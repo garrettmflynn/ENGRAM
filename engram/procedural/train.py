@@ -6,6 +6,7 @@ from tensorflow.keras.layers import Conv1D, MaxPooling1D, BatchNormalization
 import os
 import random
 import time
+from engram.procedural import models
 
 def train(model_type='CNN',ID=None):
     
@@ -14,7 +15,7 @@ def train(model_type='CNN',ID=None):
     for engram in engrams:
         labels.append(engram.tag)
 
-    model = models.(model_type)
+    model = models.select(model_type)
 
     channels = len(features)
     frequencies = len(features[0][0])

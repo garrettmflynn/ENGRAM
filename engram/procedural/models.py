@@ -1,4 +1,16 @@
 
+def select(name):
+    selection = {
+        "CNN": cnn,
+        'MIMO': mimo,
+    }
+    # Get the function from switcher dictionary
+    func = selection.get(name, lambda: "Invalid model")
+    # Execute the function
+    return func()
+
+
+
 
 def mimo():
     print('in development')

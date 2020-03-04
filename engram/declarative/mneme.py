@@ -2,10 +2,12 @@
 This module defines :class:'Mneme'
 """
 
+from engram.procedural.features import *
+
 import datetime
 
 class Mneme(object):
-    def __init__(self, id=None):
+    def __init__(self, id,tag,feature):
         """
         This is the constructor for the Mneme data object,
         the smallest unit of memory tracked by ENGRAM.
@@ -13,8 +15,8 @@ class Mneme(object):
 
         self.id = id
         self.date = datetime.datetime.now().strftime("%d-%m-%Y_%I-%M-%S_%p")
-        self.tag = ''
-        self.feature = []
+        self.tag = tag
+        self.feature = feature
 
 
     def __repr__(self):
