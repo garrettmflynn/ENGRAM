@@ -7,7 +7,7 @@ ENGRAM
 is a Python package for developing cognitive neural prostheses.
 
 .. toctree::
-    :maxdepth: 1
+    :maxdepth: 2
 
     GettingStarted
     Process

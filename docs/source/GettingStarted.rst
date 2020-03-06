@@ -38,6 +38,6 @@ Neurogenesis Working Group
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 *Ahmanson Lab* (2020)
 
-`kinesis v2 <https://github.com/Mousai-Neurotechnologies/kinesis-v2>`_
+`kinesis-v2 <https://github.com/Mousai-Neurotechnologies/kinesis-v2>`_
 is a movement decoding pipeline for OpenBCI headsets 
 that integrates automatic motion tracking with real-time signals processing. 

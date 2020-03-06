@@ -4,10 +4,8 @@ Contact
 Core Developers
 ---------------- 
 
-.. note:: **Garrett Flynn** developed ENGRAM for his senior thesis at USC
- 
+**Garrett Flynn** developed ENGRAM for his senior thesis at USC
     - **Email:** garrett@garrettflynn.com 
- 
     - **Website:** http://garrettflynn.com 
 
 Feature Requests and Reporting Issues
