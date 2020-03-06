@@ -1,5 +1,4 @@
 
-
 def select(name,reader):
     selection = {
         "RAM": RAM,
@@ -57,7 +56,7 @@ def RAM(reader):
                                                 t_start=None,
                                                 t_stop=None)
             times = reader.rescale_event_timestamp(times[0], dtype='float64')
-            neurons[neuron_name] = times
+            neurons[neuron_name] = times 
 
     print('Done parsing RAM events')
 

@@ -8,11 +8,12 @@ import pickle
 from engram.procedural.neo_handler import unpackNeo
 from engram.declarative.engram import Engram
 from engram.declarative.mneme import Mneme
-from engram.procedural import event_parsers,data_parser,feature_parser
+from engram.procedural import events,data,features,filters
+from engram.episodic.terminal import startProgress,progress,endProgress
 import numpy as np
 
 class ID(object):
-    def __init__(self, name=None,extension='.ns3',project='RAM'):
+    def __init__(self, name=None,extension=None,project=None,settings=None,load=False):
         """
         This is the constructor for the ID data object,
         which contains all Traces and Engrams of a given user tracked by ENGRAM
@@ -24,18 +25,8 @@ class ID(object):
         self.date = datetime.datetime.now().strftime("%d-%m-%Y_%I-%M-%S_%p")
         self.engrams = {}
         self.traces = {}
-        self.settings = {}
-        self.details = {}
+        self.settings = settings
         self.regions = []
-
-        datadir = 'users'
-        if not os.path.exists(datadir):
-            os.mkdir(datadir)
-        filename = os.path.join(datadir, f"{self.id}")
-        with open(filename, "wb") as fp:
-            pickle.dump(self, fp)
-        print(self.id + " initialized!")
-
 
 
     def __repr__(self):
@@ -47,20 +38,26 @@ class ID(object):
     def loadTrace(self,session=None,regions=None):
         if session is None:
             session = "Trace" + str(len(self.traces))
-        self.traces[session] = []
-        self.details[session] = {}
+        self.traces[session] = {'Data' : [],'fs' : None,'units' : None,'regions' : {}}
 
         print('Loading new trace...')
         tracedir = 'raw'
         filename = os.path.join(tracedir, f"{self.id}",f"{self.id}{self.extension}")
         reader = neo.get_io(filename=filename)
         data,fs,units = unpackNeo(reader)
-        self.traces[session] = data
-        self.details[session]['fs'] = fs
-        self.details[session]['units'] = units
+        # Get specified channels from data (move to neo)
+        data = data[np.asarray(self.settings['all_channels'])-1]
+        if fs != self.settings['fs']:
+            data = filters.select('bandpass',min=0,max=self.settings['fs'],fs=fs,order =5)
+            downsample = round(fs/self.settings['fs'])
+            self.settings['fs'] = fs/downsample
+            data = data[0::downsample]
+            print('Downsampled to ' + self.settings['fs'] + 'Hz')
+        self.traces[session]['Data'] = data
+        self.traces[session]['units'] = units
 
         if regions is not None:
-            self.details[session]['regions'] = regions
+            self.traces[session]['regions'] = regions
             if self.regions is None:
                 self.regions = np.empty()
             for region in regions:
@@ -73,36 +70,65 @@ class ID(object):
         tracedir = 'raw'
         filename = os.path.join(tracedir, f"{self.id}",f"{self.id}{extension}")
         reader = neo.get_io(filename=filename)
-        self.details[session]['events'],self.details[session]['neurons'] = event_parsers.select(self.project,reader)
+        self.traces[session]['events'],self.traces[session]['neurons'] = events.select(self.project,reader)
 
-
-    def createMnemes(self,settings=None):
-            # specify self.settings
-            self.mnemes = {}
-
-            # Create Mnemes from Traces
-            for trace in self.traces:
-                for event in self.details[trace]['events']:
-                    times = self.details[trace]['events'][event]
-                    self.mnemes[event] = np.empty(len(times))
-                    for time in times
-                        data = data_parser.getData(self.traces[trace],time,self.details[session]['fs'])
-                        feature = feature_parser.select(data,settings)
-                        self.mnemes[event] = Mneme(self.id,event,feature)
-
-    def createEngrams(self):
-        # specify self.settings
+    def createEngrams(self,settings=None):
+        
         self.engrams = {}
+        self.mnemes = {}
 
-        # Create Engrams from Mnemes
-        for region in self.regions:
-            self.engrams[region] = Engram(self.id,)
+        for trace in self.traces:
+
+            # Derive Features from Each Trace
+            feature,self.settings['t_feat'],self.settings['f_feat'] = features.select(self.settings['feature'],self.traces[trace]['Data'],self.settings)
+
+            for event in self.traces[trace]['events']:
+                if event != None and event != 'DIO_CHANGED':
+                    startProgress('Assigning Mnemes to the ' + event + ' Engram')
+
+                    times = self.traces[trace]['events'][event]
+                    # engram = np.empty(len(times))
+                    engram = {}
+
+                    for idx,time in enumerate(times):
+                        progress(idx/len(times))
+                        for channel in range(len(self.traces[trace]['Data'])):
+
+                            # Select Proper Timebins from Features
+                            if 'prev_len' in locals():
+                                mneme,prev_len = data.select(feature=feature[channel],time=time,settings=self.settings,prev_len = prev_len)
+                            else:
+                                mneme,prev_len = data.select(feature=feature[channel],time=time,settings=self.settings)
+                            # Check Region of Origin
+                            for region in self.traces[trace]['regions']:
+                                if self.settings['all_channels'][channel] in self.traces[trace]['regions'][region]['channels']:
+                                    current_region = region
+
+                            if current_region not in engram:
+                                engram[current_region] = [mneme]
+                            else:
+                                engram[current_region] = np.concatenate((engram[current_region],[mneme]))
+
+                    if event not in self.engrams:
+                            self.engrams[event] = None   
+
+                    self.engrams[event] = Engram(engram,id=self.id,tag=event)
+
+                    endProgress()
+            print('Engrams completed!')
 
 
-    def update(self,datadir='users'):
+    def save(self,datadir='users'):
         if not os.path.exists(datadir):
             os.mkdir(datadir)
-        filename = os.path.join(datadir, f"{self.id}.ns3")
+        filename = os.path.join(datadir, f"{self.id}")
         with open(filename, "wb") as fp:
             pickle.dump(self, fp)
-        print(self.id + " updated!")
+        print(self.id + " saved!")
+
+    def load(self,datadir='users'):
+        filename = os.path.join(datadir, f"{self.id}")
+        loadedID = pickle.load( open(filename, "rb" ) )
+        print(loadedID.id + " loaded!")
+        
+        return loadedID
