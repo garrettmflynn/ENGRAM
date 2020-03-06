@@ -11,7 +11,7 @@ class DataManager(object):
 
         self.board = self.initialize(source,port)
         self.session_start = self.start()
-        self.event_sources = EventManager(event_sources,self.session_start)
+        self.events = EventManager(event_sources,self.session_start)
         print('Data is now being managed...')
 
     def initialize(self,source, port):
@@ -127,20 +127,19 @@ class EventManager(object):
 
     def __init__(self, types='KEYLOGGER', stream_start=0):
 
-        self.loggers = {}
+        self.sources = {}
         self.times = {}
         for type in types:
-            self.loggers[type] = loggers.select(type,stream_start)
-            self.times[type] = []
+            self.sources[type] = loggers.select(type,stream_start)
 
 
     def update(self):
-        for type in self.loggers:
-            self.loggers[type].manage()
+        for type in self.sources:
+            self.sources[type].manage()
 
-    def pull(self):
-        for type in self.loggers:
-            self.logs[type] = self.loggers[type].log
-            self.times[type] = self.loggers[type].log
+    # def pull(self):
+    #     for type in self.loggers:
+    #         self.logs[type] = self.loggers[type].log
+    #         self.times[type] = self.loggers[type].log
 
-        return self.logs[type],self.times[type]
+    #     return self.logs[type],self.times[type]

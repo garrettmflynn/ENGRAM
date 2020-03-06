@@ -59,10 +59,14 @@ class KeyLogger(object):
         keyboard.on_release(callback=self.callback)
 
     def pull(self,full=False):
-        if full:
-            val = self.log
+        if self.log:
+            if full:
+                val = self.log
+            else:
+                val = self.log[-1]
         else:
-            val = self.log[-1]
+            val = []
+            
         return val
 
 
@@ -212,6 +216,6 @@ class Flow(object):
         cv2.putText(img, message, (int(textX), int(textY)), font, SIZE, (236, 206, 131), STROKE, cv2.LINE_AA)
 
         # Create Window
-        cv2.namedWindow(name, cv2.WINDOW_FREERATIO)
-        cv2.setWindowProperty(name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+        #cv2.namedWindow(name, cv2.WINDOW_FREERATIO)
+        #cv2.setWindowProperty(name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
         cv2.imshow(name, img)

@@ -9,10 +9,10 @@ import os
 clear = lambda: os.system('clear') # 'cls' for Windows | 'clear' for Linux
 clear()
 
-stream = None#'SYNTHETIC'
-events = None# ['FLOW']
+stream = 'SYNTHETIC'
+events =  ['FLOW']
 port = None
-existingEngrams = False
+existingEngrams = True
 
 #model_params = np.load('/Users/garrettflynn/Desktop/MOUSAI/Mneme/models/OpenBCI_02_20_20.pkl')
 
@@ -41,10 +41,11 @@ if stream is not None:
     manager = streams.DataManager(source=stream,event_sources=events,port=port)
     keys = loggers.KeyLogger()
     while True:
-        manager.event_sources.update()
-        categories = manager.event_sources[event].categories
-        manager.predict(categories=categories,settings=settings)
+        manager.events.update()
+        #categories = manager.events.sources[events[0]].categories
+        #manager.predict(categories=categories,settings=settings)
 
+        print(keys.pull())
         if keys.pull() == 'q':
             break
 
