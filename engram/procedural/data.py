@@ -2,16 +2,16 @@
 import numpy as np
 def select(feature,time,settings,prev_len = None):
     selection = {
-        "roi": roi,
+        "events": events,
         "trials": trials
     }
     # Get the function from switcher dictionary
-    func = selection.get(settings['mneme_method'], lambda: "Invalid event parser")
+    func = selection.get(settings['roi'], lambda: "Invalid event parser")
     # Execute the function
     return func(feature,time,settings,prev_len)
 
 
-def roi(feature,time,settings,prev_len):
+def events(feature,time,settings,prev_len):
     bounds = settings['roi_bounds']
     upper_index = (np.abs(settings['t_feat'] - (time + bounds[1]))).argmin()
     lower_index = (np.abs(settings['t_feat'] - (time + bounds[0]))).argmin()

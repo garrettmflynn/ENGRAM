@@ -1,12 +1,75 @@
-import engram
 from engram.declarative import ID
+
+# Working
+from engram.working import streams,loggers
+
 import os
 
 # Clear Terminal
 clear = lambda: os.system('clear') # 'cls' for Windows | 'clear' for Linux
 clear()
 
-existingEngrams = True
+stream = None#'SYNTHETIC'
+events = None# ['FLOW']
+port = None
+existingEngrams = False
+
+#model_params = np.load('/Users/garrettflynn/Desktop/MOUSAI/Mneme/models/OpenBCI_02_20_20.pkl')
+
+if stream is not None:
+
+
+    settings = {
+        'fs': 100,
+        'all_channels': range(16),
+        'feature': 'STFT',
+        'bandpass_min': 1,
+        'bandpass_max': 250,
+        '2D_min': 0,
+        '2D_max': 150,
+        't_bin': .1,  # 100 ms is .1 for blackrock
+        'f_bin': .5,
+        'overlap': .05,
+        'norm': True,
+        'norm_method': 'ZSCORE',
+        'log_transform': True,
+        'roi': 'events',
+        'roi_bounds': (-1, 1),  # Two-second window centered at the event
+        'model':  "/models/kinesis"
+    }
+
+    manager = streams.DataManager(source=stream,event_sources=events,port=port)
+    keys = loggers.KeyLogger()
+    while True:
+        manager.event_sources.update()
+        categories = manager.event_sources[event].categories
+        manager.predict(categories=categories,settings=settings)
+
+        if keys.pull() == 'q':
+            break
+
+    evs,evs_t = manager.event_sources.pull()
+    data = manager.pull()
+    data = data[manager.board.eeg_channels]
+    c_t = manager.board.time_channel
+    t = (data[c_t] - data[c_t][0])
+    session_length = manager.stop()
+
+    # Align events and brain data
+    manager.align()
+
+
+    # Specify real EEG positions
+    eeg_positions = {}
+    for idx,vals in enumerate(data):
+        eeg_positions[str(idx)] = (idx/len(data),idx/len(data),idx/len(data))
+    fs = data.shape[1]/session_length
+    units = 'uV'
+
+    id = ID('neurogenesis')
+    id.loadTrace(method='manual', manual = (data,fs,units), regions=eeg_positions)
+
+    self.save(self.data, 'traces')
 
 
 
@@ -53,13 +116,13 @@ if not existingEngrams:
         'norm': True,
         'norm_method':'ZSCORE',
         'log_transform': True,
-        'mneme_method':'roi',
+        'roi':'events',
         'roi_bounds': (-1,1) # Two-second window centered at the event
     }
 
 
     id = ID(name='keck',extension='.ns3',project='RAM',settings=settings)
-    id.loadTrace(regions=regions)
+    id.loadTrace(method='name',regions=regions)
     id.loadEvents(extension='.nex')
     id.createEngrams()
     id.save()
@@ -67,3 +130,4 @@ if not existingEngrams:
 else:
     ## Load ID
     id = ID(name='keck').load()
+    print('Loaded!')

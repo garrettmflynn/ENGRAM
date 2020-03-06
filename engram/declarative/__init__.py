@@ -16,15 +16,11 @@ Classes:
 
 '''
 
-import engram
 from engram.declarative.id import ID
-from engram.declarative.trace import Trace
 from engram.declarative.engram import Engram
 from engram.declarative.mneme import Mneme
-from engram.procedural import neo_handler
 
-
-objectlist = [ID,Trace,Engram,Mneme]
+objectlist = [ID,Engram,Mneme]
 
 objectnames = [ob.__name__ for ob in objectlist]
 class_by_name = dict(zip(objectnames,objectlist))

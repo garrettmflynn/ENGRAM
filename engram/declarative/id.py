@@ -35,19 +35,30 @@ class ID(object):
     def __str__(self):
         return '{} _ {}'.format(self.id, self.date)
 
-    def loadTrace(self,session=None,regions=None):
+    def loadTrace(self, method = 'name', session=None,manual=None,regions=None):
         if session is None:
             session = "Trace" + str(len(self.traces))
         self.traces[session] = {'Data' : [],'fs' : None,'units' : None,'regions' : {}}
 
         print('Loading new trace...')
-        tracedir = 'raw'
-        filename = os.path.join(tracedir, f"{self.id}",f"{self.id}{self.extension}")
-        reader = neo.get_io(filename=filename)
-        data,fs,units = unpackNeo(reader)
-        # Get specified channels from data (move to neo)
+
+        if method == 'name':
+            tracedir = 'raw'
+            filename = os.path.join(tracedir, f"{self.id}",f"{self.id}{self.extension}")
+            reader = neo.get_io(filename=filename)
+            data,fs,units = unpackNeo(reader)
+
+        elif method == 'manual':
+            print('Loading channel data manually')
+            data = manual[0]
+            fs = manual[1]
+            units = manual[2]
+
+        # Get specified channels from data
         data = data[np.asarray(self.settings['all_channels'])-1]
-        if fs != self.settings['fs']:
+
+        # Only downsample
+        if fs != self.settings['fs'] and self.settings['fs'] < fs:
             data = filters.select('bandpass',min=0,max=self.settings['fs'],fs=fs,order =5)
             downsample = round(fs/self.settings['fs'])
             self.settings['fs'] = fs/downsample
@@ -63,6 +74,8 @@ class ID(object):
             for region in regions:
                 np.append(self.regions,region)
             self.regions = np.unique(self.regions)
+
+
 
     def loadEvents(self,session=None,extension='.nex'):
         if session is None:
@@ -103,11 +116,15 @@ class ID(object):
                             for region in self.traces[trace]['regions']:
                                 if self.settings['all_channels'][channel] in self.traces[trace]['regions'][region]['channels']:
                                     current_region = region
+                            
+                            channel_name = str(self.settings['all_channels'][channel])
 
                             if current_region not in engram:
-                                engram[current_region] = [mneme]
+                                engram[current_region] = {}
+                                #engram[current_region][channel_name] = [mneme]
                             else:
-                                engram[current_region] = np.concatenate((engram[current_region],[mneme]))
+                                engram[current_region][channel_name] = mneme
+                                #engram[current_region][channel_name] = np.concatenate((engram[current_region],[mneme]))
 
                     if event not in self.engrams:
                             self.engrams[event] = None   
