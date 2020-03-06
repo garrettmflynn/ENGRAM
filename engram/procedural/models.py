@@ -3,26 +3,27 @@ from tensorflow.keras.layers import Dense, Dropout, Activation, Flatten
 from tensorflow.keras.layers import Conv1D, MaxPooling1D, BatchNormalization
 
 
-def select(name):
+def select(model,shape):
     selection = {
         "CNN": cnn,
         'MIMO': mimo,
     }
     # Get the function from switcher dictionary
-    func = selection.get(name, lambda: "Invalid model")
+    func = selection.get(model, lambda: "Invalid model")
     # Execute the function
-    return func()
+    return func(shape)
 
 
 
 
-def mimo():
+def mimo(shape):
     print('in development')
 
-def cnn(train_X):
+def cnn(shape):
+
     model = Sequential()
 
-    model.add(Conv1D(64, (3), input_shape=train_X.shape[1:]))
+    model.add(Conv1D(64, (3), input_shape=shape))
     model.add(Activation('relu'))
 
     model.add(Conv1D(64, (2)))

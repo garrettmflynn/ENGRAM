@@ -1,25 +1,29 @@
-
 ENGRAM
 ========
 
 **EN**\coding **G**\raphical **R**\epresentations of **A**\ctivated **M**\emories is a
-Python package for cognitive neural prostheses.
+Python package for developing cognitive neural prostheses.
 
 Organization and Philosophy
 -----------------------------
 
-This library includes several modules for cortical prosthesis development:
+ENGRAM includes four modules for cortical prosthesis development:
 
-``engram.data`` contains code for holding and processing data.
-  - Load neural recordings into our nested data structures (Data —> Mnemes —> Engrams —> IDs)
-  - Preprocess data before encoding
-``engram.encode`` contains code for managing pipeline processes.
+``engram.declarative`` contains classes for containing data.
+  - Organize and standardize engrams
+
+``engram.procedural`` contains code for managing pipeline processes.
   - Train multi-input multi-output (MIMO) models
   - Train information decoding models
-``engram.graph`` contains code used for graph visualization.
-  - Visualize model weights
 
-These modules should serve as a solid foundation for your own domain-specific prostheses.
+``engram.episodic`` contains code used for graph(ics) generation.
+  - Visualize model weights
+  - Visualize functional connectivity
+
+``engram.working`` contains code for online data processing.
+  - Stream data from OpenBCI (or synthetic) boards
+
+  See examples for usage conventions. 
 
 Installation
 ------------
@@ -37,7 +41,7 @@ Contribute
 Support
 -------
 
-If you are having issues, please email me at gflynn@usc.edu
+If you are having issues, please email me at garrett@garrettflynn.com
 
 More information
 ----------------

@@ -1,27 +1,15 @@
 ======================================
-Welcome to ENGRAM's Documentation! 
+ENGRAM
 ======================================
 
-**EN**\coding **G**\raphical **R**\epresentations of **A**\ctivated **M**\emories is a
-Python package for cognitive neural prostheses.
-
-It provides a 
-**collection of useful functions for multi-input multi-output (MIMO) modeling and information decoding from multi-channel neurophysiology recordings.**
-
-Though shipped with a fully-functioning application for the DARPA Restoring Active Memory (RAM) program, 
-ENGRAM modules should serve as a solid foundation for your own domain-specific prostheses.
-
+**EN**\coding **G**\raphical **R**\epresentations of **A**\ctivated **M**\emories 
+**(ENGRAM)** 
+is a Python package for developing cognitive neural prostheses.
 
 .. toctree::
-    OurPhilosophy
-    CoreModules
-    ENGRAMApp
-    AskHelp
+    :maxdepth: 1
+
+    GettingStarted
+    Process
     License
-
-Indices and tables
-==================
-
-    * :ref:`genindex`
-    * :ref:`modindex`
-    * :ref:`search`
+    Contact

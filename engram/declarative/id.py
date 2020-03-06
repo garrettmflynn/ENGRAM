@@ -8,7 +8,7 @@ import pickle
 from engram.procedural.neo_handler import unpackNeo
 from engram.declarative.engram import Engram
 from engram.declarative.mneme import Mneme
-from engram.procedural import events,data,features,filters
+from engram.procedural import events,data,features,filters,train
 from engram.episodic.terminal import startProgress,progress,endProgress
 import numpy as np
 
@@ -103,28 +103,27 @@ class ID(object):
                     # engram = np.empty(len(times))
                     engram = {}
 
-                    for idx,time in enumerate(times):
-                        progress(idx/len(times))
+                    for trial,time in enumerate(times):
+                        progress(trial/len(times))
+                        engram[trial] = {}
+
                         for channel in range(len(self.traces[trace]['Data'])):
 
                             # Select Proper Timebins from Features
                             if 'prev_len' in locals():
-                                mneme,prev_len = data.select(feature=feature[channel],time=time,settings=self.settings,prev_len = prev_len)
+                                featureset,prev_len = data.select(feature=feature[channel],time=time,settings=self.settings,prev_len = prev_len)
                             else:
-                                mneme,prev_len = data.select(feature=feature[channel],time=time,settings=self.settings)
+                                featureset,prev_len = data.select(feature=feature[channel],time=time,settings=self.settings)
+                            
                             # Check Region of Origin
                             for region in self.traces[trace]['regions']:
                                 if self.settings['all_channels'][channel] in self.traces[trace]['regions'][region]['channels']:
                                     current_region = region
                             
-                            channel_name = str(self.settings['all_channels'][channel])
-
-                            if current_region not in engram:
-                                engram[current_region] = {}
-                                #engram[current_region][channel_name] = [mneme]
-                            else:
-                                engram[current_region][channel_name] = mneme
-                                #engram[current_region][channel_name] = np.concatenate((engram[current_region],[mneme]))
+                            channel_name = self.settings['all_channels'][channel]
+                            engram[trial][channel_name] = {}
+                            engram[trial][channel_name]['features'] = featureset
+                            engram[trial][channel_name]['region'] = current_region
 
                     if event not in self.engrams:
                             self.engrams[event] = None   
@@ -134,7 +133,29 @@ class ID(object):
                     endProgress()
             print('Engrams completed!')
 
+    def model(self,method='channels',model_type='CNN'):
+        in_matrix = []
+        labels = []
+        for engram in self.engrams:
+            labels.append(self.engrams[engram].tag)
+            tri_matrix = []
+            if method == 'channels':
+                for trial in self.engrams[engram].trials:
+                    chan_matrix = []
+                    for channel in self.engrams[engram].trials[trial]:
+                        chan_matrix.append(self.engrams[engram].trials[trial][channel]['features'])
+                    tri_matrix.append(chan_matrix)
+                in_matrix.append(tri_matrix)
+            elif method == 'regions':
+                print('Method currently in development.')
+            else:
+                print('Method not supported.')
 
+        train.train(model_type,in_matrix,labels)
+    
+    
+    
+    
     def save(self,datadir='users'):
         if not os.path.exists(datadir):
             os.mkdir(datadir)

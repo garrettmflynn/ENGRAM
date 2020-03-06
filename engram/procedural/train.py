@@ -2,17 +2,17 @@ import numpy as np
 import time
 from engram.procedural import models
 
-def train(model_type='CNN',ID=None):
-    
-    labels = []
-    engrams = ID.engrams
-    for engram in engrams:
-        labels.append(engram.tag)
+def train(model_type='CNN',in_matrix=None,labels=None):
 
-    model = models.select(model_type)
+    shape = np.asarray(in_matrix[0]).shape[1:]
+    print('Input Size: '+ str(shape))
+    model = models.select(model=model_type,shape=shape)
 
-    channels = len(features)
-    frequencies = len(features[0][0])
+    engrams = len(in_matrix)
+    trials = len(in_matrix[0])
+    channels = len(in_matrix[0][0])
+    times = len(in_matrix[0][0][0])
+    frequencies = len(in_matrix[0][0][0][0])
     reshape = (-1, channels, frequencies)
 
     print("split features into training and testing datasets")

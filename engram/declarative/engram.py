@@ -3,6 +3,8 @@ This module defines :class:'Engram'
 """
 
 import datetime
+from engram import procedural
+import numpy as np
 
 class Engram(object):
     def __init__(self, engram,id='User',tag='Unspecified'):
@@ -14,7 +16,8 @@ class Engram(object):
         self.id = id
         self.tag = tag
         self.date = datetime.datetime.now().strftime("%d-%m-%Y_%I-%M-%S_%p")
-        self.regions = engram
+        self.trials = engram
+        self.models = {}
 
     def __repr__(self):
         return "Engram('{},'{}',{})".format(self.id, self.date)
