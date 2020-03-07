@@ -1,6 +1,13 @@
 Getting Started
 ================
 
+Introduction
+-------------
+**EN**\coding **G**\raphical **R**\epresentations of **A**\ctivated **M**\emories 
+**(ENGRAM)** 
+is a Python package for developing cognitive neural prostheses.
+
+
 Core Modules
 -------------
 
@@ -26,7 +33,7 @@ Examples
 ---------
 
 
-Restoring Active Memory (RAM)
+multi-scale memories
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 *Song Lab* (2020)
 
@@ -34,7 +41,7 @@ Restoring Active Memory (RAM)
 is a custom pipeline for decoding memory content from human hippocampal recordings.
 
 
-Neurogenesis Working Group 
+kinesis-v2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 *Ahmanson Lab* (2020)
 
