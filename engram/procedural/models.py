@@ -7,6 +7,7 @@ def select(model,shape):
     selection = {
         "CNN": cnn,
         'MIMO': mimo,
+        'custom':custom
     }
     # Get the function from switcher dictionary
     func = selection.get(model, lambda: "Invalid model")
@@ -46,3 +47,13 @@ def cnn(shape):
                 metrics=['accuracy'])  
 
     return model
+
+def custom(shape):
+    import custommodelconfig
+
+    model = tf.keras.models.model_from_config(
+    custommodelconfig, custom_objects=None
+    )
+
+    return model
+
