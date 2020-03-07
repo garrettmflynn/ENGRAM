@@ -45,13 +45,14 @@ Project Ideas
 .. Note:: 
     **13 March 2020:** Convert visualizations to Glumpy.
 
-    **1 April 2020:** Release Version 0.1.0 on PyPi.
+    **1 April 2020:** Release Version 0.1.0 on PyPi. Visualize MIMO algorithm
 
     **12 April 2020:** Use `ROOTS <https://github.com/bingsome/roots>`_ to grow out artificial connections between functionally connected neurons.
 
     **1 May 2020:** 
     Model your repository off of these projects
 
+        - `Ephyviewer <https://github.com/NeuralEnsemble/ephyviewer>`_
         - `EEGLearn <https://github.com/pbashivan>`_
         - `Wagner Lab <https://github.com/WagnerLabPapers>`_
         - `Neurotic <https://github.com/jpgill86/neurotic>`_
