@@ -64,7 +64,7 @@ was informed by the following projects:
     :target: License_
     :alt: License
 
-.. _GitHub:         https://github.com/jpgill86/neurotic
+.. _GitHub:         https://github.com/garrettmflynn/engram
 .. _ReadTheDocs:    https://readthedocs.org/projects/engram
 .. _PyPI:           https://pypi.org/project/engram/
 .. _License:        https://www.gnu.org/licenses/gpl-3.0

@@ -5,13 +5,13 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="engram",
-    version="0.0.0",
+    version="0.0.1",
     author="Garrett Flynn",
     author_email="garrett@garrettflynn.com",
     description="Encoding Graphical Representations \
         of Activated Memories (ENGRAM)",
     long_description=long_description,
-    long_description_content_type="README.rst",
+    long_description_content_type="text/markdown",
     url="https://github.com/garrettmflynn/Engram",
     packages=setuptools.find_packages(),
     classifiers=[
