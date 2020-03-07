@@ -43,9 +43,7 @@ Project Ideas
 ^^^^^^^^^^^^^^^
 
 .. Note:: 
-    **13 March 2020:** Convert visualizations to Glumpy.
-
-    **1 April 2020:** Release Version 0.1.0 on PyPi. Visualize MIMO algorithm
+    **1 April 2020:** Release Version 0.1.0 on PyPi. Visualize MIMO algorithm.
 
     **12 April 2020:** Use `ROOTS <https://github.com/bingsome/roots>`_ to grow out artificial connections between functionally connected neurons.
 

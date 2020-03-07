@@ -29,6 +29,13 @@ ENGRAM includes four modules for cortical prosthesis development:
 
 These modules should serve as a solid foundation for your own domain-specific prostheses.
 
+Requirements
+-------------
+Glumpy
+
+.. note:: Must install pyopengl and freetype-py manually, then change the glumpy/ext/__init__.py to install this local version of freetype rather than the included Glumpy version.
+
+
 Examples
 ---------
 
