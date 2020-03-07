@@ -9,10 +9,10 @@
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-#
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+
+import os
+import sys
+sys.path.insert(0, os.path.abspath('../..'))
 
 
 # -- Project information -----------------------------------------------------
@@ -32,7 +32,7 @@ master_doc = 'index'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinxcontrib.bibtex']
+extensions = ['sphinxcontrib.bibtex','sphinx.ext.autodoc','jupyter_sphinx.execute']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -50,6 +50,21 @@ exclude_patterns = []
 #
 html_theme = 'sphinx_rtd_theme'
 #html_theme = 'sphinxdoc'
+html_theme_options = {
+    'canonical_url': '',
+    'analytics_id': 'UA-XXXXXXX-1',  #  Provided by Google in your dashboard
+    'logo_only': True,
+    'display_version': True,
+    'prev_next_buttons_location': 'bottom',
+    'style_external_links': False,
+    'style_nav_header_background': 'black',
+    # Toc options
+    'collapse_navigation': True,
+    'sticky_navigation': True,
+    'navigation_depth': 4,
+    'includehidden': True,
+    'titles_only': False
+}
 
 
 # Add any paths that contain custom static files (such as style sheets) here,
@@ -57,4 +72,4 @@ html_theme = 'sphinx_rtd_theme'
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
-html_logo = 'images/engramtransparent.png'
+html_logo = 'images/engramlogo.png'

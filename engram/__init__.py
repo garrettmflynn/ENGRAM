@@ -1,13 +1,13 @@
 # -*- coding:utf-8 -*-
-'''
-ENGRAM is a package representing memory traces in the brain.
-'''
+"""
+An open-source Python package for developing cognitive neural prostheses.
+"""
 
 import logging
 logging_handler = logging.StreamHandler()
 
-# from engram.declarative import *
-# from engram.procedural import *
-# from engram.episodic import *
+from .declarative import *
+from .procedural import *
+from .episodic import *
 
-from engram.version import version as __version__
+from .version import version as __version__

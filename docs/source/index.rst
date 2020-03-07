@@ -1,60 +1,78 @@
 .. module:: engram
 
-
 ================================================
-ENGRAM: A User's Guide
+ENGRAM
 ================================================
-.. image:: images/engramlogo.png
-    :width: 600 px
 
-**EN**\coding **G**\raphical **R**\epresentations of **A**\ctivated **M**\emories 
-**(ENGRAM)** 
-is a Python package for developing cognitive neural prostheses.
+**Encoding Graphical Representations of Activated Memories**
+is an open-source Python package for developing cognitive neural prostheses.
 
-.. Note:: 
-    - Add motivation section
-    - Add build status
-    - Add code style (????)
-    - Add tech framework used
-    - Add stand-out features
-    - Add code examples
-    - Add installation steps
-    - Roughly sketch the API reference
-    - Make and show how to run tests
-    - Finish the usage guide
-    - Let people know how they can contribute into your project. A `contributing guideline <https://github.com/zulip/zulip-electron/blob/master/CONTRIBUTING.md>`_ will be a big plus.
-    - Give proper credits. Give proper credits. This could be a link to any repo which inspired you to build this project, any blogposts or links to people who contrbuted in this project.
+|PyPI badge| |GitHub badge| |Docs badge| |License badge|
 
-Documentation
-^^^^^^^^^^^^^^^
 .. toctree::
     :maxdepth: 1
+    :caption: Table of Contents
 
+    NarrativeOverview
     GettingStarted
-    Process
-    Team
+    APIReferenceGuide
+    Contributing
+    ReleaseNotes
 
-License
+Features
 ^^^^^^^^^^^^^^^
-ENGRAM is free software, distributed under the 
-GNU General Public License (GPLv3).
+**Model multi-channel electrophysiology recordings** using multiple machine learning techniques (i.e. MIMO, CNN, RNN, etc)
 
-Project Ideas
-^^^^^^^^^^^^^^^
 
-.. Note:: 
-    **1 April 2020:** Release Version 0.1.0 on PyPi. Visualize MIMO algorithm.
+**Visualize multi-input multi-output (MIMO) modeling** of electrophysiology recordings
 
-    **12 April 2020:** Use `ROOTS <https://github.com/bingsome/roots>`_ to grow out artificial connections between functionally connected neurons.
 
-    **1 May 2020:** 
-    Model your repository off of these projects
+Leverage ROOTS_ to **grow artificial connections between functionally connected neurons**
 
-        - `Ephyviewer <https://github.com/NeuralEnsemble/ephyviewer>`_
-        - `EEGLearn <https://github.com/pbashivan>`_
-        - `Wagner Lab <https://github.com/WagnerLabPapers>`_
-        - `Neurotic <https://github.com/jpgill86/neurotic>`_
-        - `Elephant <https://elephant.readthedocs.io/en/latest/>`_
+Acknowledgements
+^^^^^^^^^^^^^^^^^^
+ENGRAM was developed at `Song Lab`_ for the Restoring Active Memory (RAM) program,
+funded by the Defence Advanced Research Projects Agency (DARPA). 
 
-    **30 June 2020:** Open-source the code and DARPA data.
+See our :ref:`contributing` section to get to 
+know all the wonderful people who've contributed to the project!
 
+Both the implementation and documentation of ENGRAM 
+was informed by the following projects:
+
+    - Ephyviewer_
+    - EEGLearn_ 
+    - `Wagner Lab`_ 
+    - Neurotic_ 
+    - Elephant_ 
+    - Neo_
+
+
+.. |PyPI badge| image:: https://img.shields.io/pypi/v/engram.svg?logo=python&logoColor=white
+    :target: PyPI_
+    :alt: PyPI project
+
+.. |GitHub badge| image:: https://img.shields.io/badge/github-source_code-blue.svg?logo=github&logoColor=white
+    :target: GitHub_
+    :alt: GitHub source code
+
+.. |Docs badge| image:: https://img.shields.io/readthedocs/engram/latest.svg?logo=read-the-docs&logoColor=white
+    :target: ReadTheDocs_
+    :alt: Documentation status
+
+.. |License badge| image:: https://img.shields.io/badge/License-GPLv3-blue.svg
+    :target: License_
+    :alt: License
+
+.. _GitHub:         https://github.com/jpgill86/neurotic
+.. _ReadTheDocs:    https://readthedocs.org/projects/engram
+.. _PyPI:           https://pypi.org/project/engram/
+.. _License:        https://www.gnu.org/licenses/gpl-3.0
+.. _Song Lab:       https://viterbi.usc.edu/directory/faculty/Song/Dong
+.. _ROOTS:          https://github.com/bingsome/roots
+.. _Ephyviewer:     https://github.com/NeuralEnsemble/ephyviewer
+.. _EEGLearn:       https://github.com/pbashivan
+.. _Wagner Lab:     https://github.com/WagnerLabPapers
+.. _Neurotic:       https://github.com/jpgill86/neurotic
+.. _Elephant:       https://elephant.readthedocs.io/en/latest/
+.. _Neo:            https://github.com/NeuralEnsemble/python-neo/tree/master/neo

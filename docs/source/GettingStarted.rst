@@ -1,12 +1,30 @@
+================
 Getting Started
 ================
 
-Introduction
--------------
-**EN**\coding **G**\raphical **R**\epresentations of **A**\ctivated **M**\emories 
-**(ENGRAM)** 
-is a Python package for developing cognitive neural prostheses.
+Encoding Graphical Representations of Activated Memories (ENGRAM) 
+is an open-source Python package for developing cognitive neural prostheses.
 
+Installation
+-------------
+Get engram from pip:
+
+``pip install engram``
+
+
+Requirements
+-------------
+**Python 3.7**
+Neo
+Brainflow
+Tensorflow
+Glumpy
+
+.. note:: Must install ``pyopengl`` and ``freetype-py`` manually, then change the ``glumpy/ext/__init__.py`` to install this local version of ``freetype`` rather than the included Glumpy version.
+
+Numpy
+Scipy
+Pandas
 
 Core Modules
 -------------
@@ -29,24 +47,18 @@ ENGRAM includes four modules for cortical prosthesis development:
 
 These modules should serve as a solid foundation for your own domain-specific prostheses.
 
-Requirements
--------------
-Glumpy
-
-.. note:: Must install pyopengl and freetype-py manually, then change the glumpy/ext/__init__.py to install this local version of freetype rather than the included Glumpy version.
-
 
 Examples
 ---------
 
 
-multi-scale memories
+multiscale-memories
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 *Song Lab* (2020)
 
 `multiscale-memories <https://github.com/GarrettMFlynn/multiscale-memories>`_
-is a custom pipeline for decoding memory content from human hippocampal recordings.
-
+is a custom pipeline developed at Song Lab 
+for decoding memory contents from human hippocampal recordings.
 
 kinesis-v2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -55,3 +67,16 @@ kinesis-v2
 `kinesis-v2 <https://github.com/Mousai-Neurotechnologies/kinesis-v2>`_
 is a movement decoding pipeline for OpenBCI headsets 
 that integrates automatic motion tracking with real-time signals processing. 
+
+
+
+episodic-memories
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+*Garrett Flynn* (2020)
+
+A personal project for shader-based representation of memories
+
+.. jupyter-execute:: 
+
+  name = 'world'
+  print('hello ' + name + '!')

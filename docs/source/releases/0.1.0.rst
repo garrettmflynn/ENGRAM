@@ -1,0 +1,20 @@
+.. _v0.1.0:
+
+engram 0.1.0
+==============
+
+?? April 2020
+
+Improvements
+------------
+
+* Add continuous integration with Travis CI for automated testing
+
+* Add some tests
+
+* Migrate example data to GIN
+
+Bug fixes
+---------
+
+* Raise an exception if a Neo RawIO cannot be found for the data file
