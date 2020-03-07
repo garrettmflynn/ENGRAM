@@ -1,3 +1,5 @@
+.. _getting-started:
+
 ================
 Getting Started
 ================
@@ -75,8 +77,3 @@ episodic-memories
 *Garrett Flynn* (2020)
 
 A personal project for shader-based representation of memories
-
-.. jupyter-execute:: 
-
-  name = 'world'
-  print('hello ' + name + '!')

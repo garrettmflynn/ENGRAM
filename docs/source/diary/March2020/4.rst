@@ -1,0 +1,3 @@
+.. admonition:: Diary Entry #4
+    
+    *Add text here.*

@@ -1,0 +1,8 @@
+.. admonition:: Diary Entry #2
+
+    *For this iteration,*
+    *I've focused a lot on Restructured Text documentation*
+    *and compatibility with PEP8 conventions.*
+    *Who knew code could be stylish?*
+
+   

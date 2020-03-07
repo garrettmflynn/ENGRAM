@@ -11,7 +11,7 @@ setuptools.setup(
     description="Encoding Graphical Representations \
         of Activated Memories (ENGRAM)",
     long_description=long_description,
-    long_description_content_type="text/markdown",
+    long_description_content_type="README.rst",
     url="https://github.com/garrettmflynn/Engram",
     packages=setuptools.find_packages(),
     classifiers=[

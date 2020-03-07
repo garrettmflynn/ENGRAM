@@ -13,7 +13,7 @@ is an open-source Python package for developing cognitive neural prostheses.
     :maxdepth: 1
     :caption: Table of Contents
 
-    NarrativeOverview
+    Overview
     GettingStarted
     APIReferenceGuide
     Contributing

@@ -1,0 +1,3 @@
+.. admonition:: Diary Entry #3
+
+  *Shaders are awesome! Glumpy, on the other hand, is a bit finicky...*
