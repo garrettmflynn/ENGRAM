@@ -17,7 +17,7 @@ sys.path.insert(1, os.path.abspath('../../'))
 package_path = os.path.abspath('../..')
 os.environ['PYTHONPATH'] = ':'.join((package_path, os.environ.get('PYTHONPATH', '')))
 
-autodoc_mock_imports = ["tensorflow"]
+autodoc_mock_imports = ['tensorflow']
 
 # -- Project information -----------------------------------------------------
 

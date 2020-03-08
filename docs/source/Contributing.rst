@@ -25,8 +25,9 @@ Garrett Flynn
 
     Garrett's **senior thesis** project was to build out ENGRAM
     as an open source project. 
-    Feel free to reach out to him with any questions 
+    Feel free to reach out to him 
     at garrett@garrettflynn.com 
+    with any questions.
 
 Alice Wu
 ^^^^^^^^^^^^^^
