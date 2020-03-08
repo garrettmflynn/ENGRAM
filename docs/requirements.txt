@@ -5,5 +5,4 @@ neo
 scipy
 pandas
 vispy
-pyqt5 
-tensorflow
+pyqt5
