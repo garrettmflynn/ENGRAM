@@ -6,4 +6,3 @@ scipy
 pandas
 vispy
 pyqt5
-tensorflow
