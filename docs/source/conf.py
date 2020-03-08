@@ -38,7 +38,7 @@ extensions = ['sphinxcontrib.bibtex','sphinx.ext.autodoc']
 
 # ,'jupyter_sphinx.execute']
 
-autodoc_mock_imports = ['tensorflow']
+# autodoc_mock_imports = ['tensorflow']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
