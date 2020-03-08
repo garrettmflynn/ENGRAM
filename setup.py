@@ -2,10 +2,10 @@ import setuptools
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
-    
+
 setuptools.setup(
     name="engram",
-    version="0.0.1",
+    version="0.0.2",
     author="Garrett Flynn",
     author_email="garrett@garrettflynn.com",
     description="Encoding Graphical Representations \
@@ -18,6 +18,15 @@ setuptools.setup(
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: OS Independent",
+    ],
+    install_requires=[
+   'numpy',
+   'tensorflow',
+   'neo',
+   'pandas',
+   'scipy',
+   'glumpy',
+   'pyopengl'
     ],
     python_requires='==3.7',
 )

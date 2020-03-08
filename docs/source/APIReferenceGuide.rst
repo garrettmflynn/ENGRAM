@@ -3,8 +3,8 @@
 ===================
 API Reference Guide
 ===================
-
-In addition to using **ENGRAM** as a standalone app, you can also leverage its API in your own code.
+.. important:: 
+  In addition to using **ENGRAM** as a standalone app, you can also leverage its API in your own code.
 
 .. toctree::
    :maxdepth: 1

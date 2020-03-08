@@ -4,7 +4,7 @@
 Getting Started
 ================
 
-Encoding Graphical Representations of Activated Memories (ENGRAM) 
+**Encoding Graphical Representations of Activated Memories (ENGRAM)**
 is an open-source Python package for developing cognitive neural prostheses.
 
 Installation
@@ -16,43 +16,29 @@ Get engram from pip:
 
 Requirements
 -------------
-**Python 3.7**
-Neo
-Brainflow
-Tensorflow
-Glumpy
 
-.. note:: Must install ``pyopengl`` and ``freetype-py`` manually, then change the ``glumpy/ext/__init__.py`` to install this local version of ``freetype`` rather than the included Glumpy version.
+* **Python 3.7**
+* Neo
+* Tensorflow
+* Numpy
+* Scipy
+* Pandas
+* Glumpy
 
-Numpy
-Scipy
-Pandas
+.. important:: 
+  To use Glumpy, you must install ``pyopengl`` and ``freetype-py`` manually, then change the ``glumpy/ext/__init__.py`` to install this local version of ``freetype`` rather than the included Glumpy version.
 
-Core Modules
--------------
+Features
+-----------
 
-ENGRAM includes four modules for cortical prosthesis development:
-
-``engram.declarative`` contains classes for containing data.
-  - Organize and standardize engrams
-
-``engram.procedural`` contains code for managing pipeline processes.
-  - Train multi-input multi-output (MIMO) models
-  - Train information decoding models
-
-``engram.episodic`` contains code used for graph(ics) generation.
-  - Visualize model weights
-  - Visualize functional connectivity
-
-``engram.working`` contains code for online data processing.
-  - Stream data from OpenBCI (or synthetic) boards
-
-These modules should serve as a solid foundation for your own domain-specific prostheses.
-
+* **Convert electrophysiology data from multiple brain regions into Engrams** using ``engram.declarative``
+* **Model multi-channel electrophysiology recordings** using multiple machine learning techniques (i.e. MIMO, CNN, RNN, etc) using ``engram.procedural``
+* **Visualize multi-input multi-output (MIMO) modeling** of electrophysiology recordings using ``engram.episodic``
+* Leverage ROOTS_ to **grow artificial connections between functionally connected neurons**
+* **Online data processing for OpenBCI headsets** using ``engram.working``
 
 Examples
 ---------
-
 
 multiscale-memories
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -70,10 +56,10 @@ kinesis-v2
 is a movement decoding pipeline for OpenBCI headsets 
 that integrates automatic motion tracking with real-time signals processing. 
 
-
-
 episodic-memories
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 *Garrett Flynn* (2020)
 
 A personal project for shader-based representation of memories
+
+.. _ROOTS:          https://github.com/bingsome/roots

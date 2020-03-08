@@ -3,7 +3,7 @@ Overview
 =====================
 .. important::
 
-  **This overview details ENGRAM's development through interactive documentation.** 
+  **This page details ENGRAM's development through interactive documentation.** 
   For conventional documentation, see :ref:`getting-started` or our :ref:`api`.
 
 0.0.0: Initialization
