@@ -12,13 +12,15 @@ is an open-source Python package for developing cognitive neural prostheses.
 .. toctree::
     :maxdepth: 1
     :caption: Table of Contents
-
+    
     Overview
     GettingStarted
     APIReferenceGuide
+    CaseStudies
     Contributing
     ReleaseNotes
     Acknowledgements
+
 
 
 .. |PyPI badge| image:: https://img.shields.io/pypi/v/engram.svg?logo=python&logoColor=white

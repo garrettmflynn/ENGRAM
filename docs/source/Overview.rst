@@ -33,8 +33,8 @@ for the main developer's senior thesis project.
 0.2.0: Visualization
 ----------------------------------------------------------
 
-**Coming soon:** We visualize the process of memory formation in the hippocampus
-using MNI coordinates :cite:`Blum2014`
+**Coming soon:** We visualize the process of memory formation
+using hippocampal MNI coordinates.
 
 .. jupyter-execute:: 
 
@@ -43,8 +43,3 @@ using MNI coordinates :cite:`Blum2014`
 
 
 .. include:: diary/March2020/3.rst
-
-References
--------------
-
-.. bibliography:: references.bib
