@@ -1,2 +1,9 @@
 sphinxcontrib-bibtex
 jupyter-sphinx
+numpy 
+neo
+scipy
+pandas
+vispy
+pyqt5 
+tensorflow
