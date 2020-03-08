@@ -1909,10 +1909,6 @@ def fireworks():
     import numpy as np
     from vispy import gloo, app
 
-    # import vispy
-    # vispy.use('pyside', 'es2')
-
-
     # Create a texture
     radius = 32
     im1 = np.random.normal(

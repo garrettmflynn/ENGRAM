@@ -1,6 +1,6 @@
-# from tensorflow.keras.models import Sequential
-# from tensorflow.keras.layers import Dense, Dropout, Activation, Flatten
-# from tensorflow.keras.layers import Conv1D, MaxPooling1D, BatchNormalization
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Dropout, Activation, Flatten
+from tensorflow.keras.layers import Conv1D, MaxPooling1D, BatchNormalization
 
 
 def select(model,shape):
@@ -13,9 +13,6 @@ def select(model,shape):
     func = selection.get(model, lambda: "Invalid model")
     # Execute the function
     return func(shape)
-
-
-
 
 def mimo(shape):
     print('in development')
