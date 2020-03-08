@@ -10,16 +10,21 @@ is an open-source Python package for developing cognitive neural prostheses.
 |PyPI badge| |GitHub badge| |Docs badge| |License badge|
 
 .. toctree::
-    :maxdepth: 1
-    :caption: Table of Contents
+    :maxdepth: 2
+    :caption: Core Documentation
     
-    Overview
     GettingStarted
+    Walkthroughs
     APIReferenceGuide
-    CaseStudies
     Contributing
     ReleaseNotes
     Acknowledgements
+
+.. toctree::
+    :maxdepth: 1
+    :caption: Beyond Engrams
+
+    NeuroDocs
 
 
 

@@ -1,28 +1,23 @@
-.. _cases:
+.. _neurodocs:
 
-=====================
-Case Studies
-=====================
-.. warning::
+===============================================================
+Notes on Documentating the Brain
+===============================================================
 
-  **This page is a template for Garrett's thesis project.** 
-  All views expressed herein are his and his alone--and may not even be that. 
+.. important::
+
+  **This page details the core developer's personal exploration**
+  **of neuroscience software documentation.**
   
-  Don't take it too seriously.
+  For ENGRAM's documentation, see :ref:`getting-started` or our :ref:`api`.
 
-Introduction
+The Problem
 --------------------------------------------
 
-**Question:** What are some existing open-source neuroscience projects?
+**Neuroscience Documentation Sucks:** Yes, yes it does.
 
-Methods
+A Selection of Cases
 --------------------------------------------
-
-I did a Google search.
-
-Results
---------------------------------------------
-
 Wagner Lab
 ^^^^^^^^^^^^^^^^^^^^
 
@@ -47,8 +42,6 @@ which may involve historical or organizational information important for underst
 of the issues and both confirming and disproving evidence are presented followed by the
 presentation of the overall case assertions
 
-.. important:: We have found **Theme #2**
-
 **A Closing Vignette** as a way of cautoning the reader to the specific case context
 saying "I like to close on an experiential note, reminding the reader that this report
 is just one person's encounter with a complex case"
@@ -61,7 +54,7 @@ EEGLearn_ is a set of functions for supervised feature learning/classification
 of mental states from EEG based on "EEG images" idea. 
 :cite:`Bashivan2016`
 
-.. important:: We have found **Theme #3**
+.. important:: We have found **Theme #2**
 
 Ephyviewer
 ^^^^^^^^^^^^^^^^^^^^
@@ -70,9 +63,7 @@ for building custom viewers for electrophysiological signals,
 video, events, epochs, spike trains,
 data tables, and time-frequency representations of signals.
 
-.. important:: We have found **Theme #4**
-
-.. important:: We have found **Theme #5**
+.. important:: We have found **Theme #3**
 
 Neurotic
 ^^^^^^^^^^^^^^^^^^^^
@@ -81,7 +72,7 @@ Neurotic_ is an app for Windows, macOS, and Linux that allows you to
 easily review and annotate your electrophysiology data and simultaneously 
 captured video.
 
-.. important:: We have found **Theme #6**
+.. important:: We have found **Theme #4**
 
 Neo
 ^^^^^^^^^^^^^^^^^^^^
@@ -94,9 +85,7 @@ plus non-proprietary formats including HDF5.
 :cite:`Garcia2014`
 
 
-.. important:: We have found **Theme #7**
-
-.. important:: We have found **Theme #8**
+.. important:: We have found **Theme #5**
 
 Elephant
 ^^^^^^^^^^^^^^^^^^^^
@@ -107,37 +96,26 @@ for the analysis of electrophysiological data
 in the Python programming language. 
 
 
-.. important:: We have found **Theme #9**
+.. important:: We have found **Theme #6**
 
-Discussion
---------------------------------------------
 
-These projects are really cool.
+Preliminary Patterns
+----------------------------------------------------------
 
 .. admonition:: Lesson #1
     
     *???*
 
-.. admonition:: Lesson #2
-    
-    *???*
 
-.. admonition:: Lesson #3
-    
-    *???*
+Appendix: Some Cool Things You Can Do with Sphinx
+-----------------------------------------------------
 
-.. admonition:: Lesson #4
-    
-    *???*
+.. include:: diary/March2020/4.rst
 
-.. admonition:: Lesson #5
-    
-    *???*
+.. jupyter-execute:: 
 
-Conclusion
---------------------------------------------
-
-Open source for all!
+  from engram.episodic import shaders
+  shaders.select('fireworks')
 
 
 References

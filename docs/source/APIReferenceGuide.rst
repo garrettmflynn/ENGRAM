@@ -6,18 +6,22 @@ API Reference Guide
 .. important:: 
   In addition to using **ENGRAM** as a standalone app, you can also leverage its API in your own code.
 
+
+Declarative
+----------------------
+
 .. toctree::
    :maxdepth: 1
-   :caption: Declarative
 
    api/id
    api/engram
    api/mneme
 
+Procedural
+----------------------
 
 .. toctree::
   :maxdepth: 1
-  :caption: Procedural
 
   api/data
   api/events
@@ -30,19 +34,21 @@ API Reference Guide
   api/train
   api/analyze
 
+Episodic
+----------------------
 
 .. toctree::
   :maxdepth: 1
-  :caption: Episodic
 
   api/classic
   api/shaders
   api/terminal
 
+Working
+----------------------
 
 .. toctree::
   :maxdepth: 1
-  :caption: Working
 
   api/loggers
   api/streams
