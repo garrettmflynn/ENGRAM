@@ -112,10 +112,10 @@ Appendix: Some Cool Things You Can Do with Sphinx
 
 .. include:: diary/March2020/4.rst
 
-.. jupyter-execute:: 
+.. .. jupyter-execute:: 
 
-  from engram.episodic import shaders
-  shaders.select('fireworks')
+..   from engram.episodic import shaders
+..   shaders.select('fireworks')
 
 
 References

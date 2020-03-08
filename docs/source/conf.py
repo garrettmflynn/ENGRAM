@@ -15,9 +15,7 @@ import sys
 sys.path.insert(1, os.path.abspath('../../'))
 
 package_path = os.path.abspath('../..')
-os.environ['PYTHONPATH'] = ':'.join((package_path, os.environ.get('PYTHONPATH', '')))
-
-autodoc_mock_imports = ['tensorflow']
+# os.environ['PYTHONPATH'] = ':'.join((package_path, os.environ.get('PYTHONPATH', '')))
 
 # -- Project information -----------------------------------------------------
 
@@ -36,7 +34,11 @@ master_doc = 'index'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinxcontrib.bibtex','sphinx.ext.autodoc','jupyter_sphinx.execute']
+extensions = ['sphinxcontrib.bibtex','sphinx.ext.autodoc']
+
+# ,'jupyter_sphinx.execute']
+
+autodoc_mock_imports = ['tensorflow']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
