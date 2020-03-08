@@ -25,8 +25,8 @@ setuptools.setup(
    'neo',
    'pandas',
    'scipy',
-   'glumpy',
-   'pyopengl'
+   'vispy',
+   'pyqt5'
     ],
     python_requires='==3.7',
 )

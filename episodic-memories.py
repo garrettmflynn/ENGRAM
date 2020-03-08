@@ -1,14 +1,14 @@
 from engram.episodic import shaders
 
 # Available:
-# matplotlib
-# heatmap
-# frequency
-# galaxy
+# boids 
+# galaxy 
 # fireworks
-# spherical-harmonics
+# realtimesignals 
+# interactiveqt 
+# brain 
+# graphical 
+# sandbox 
 # oscilloscope
-# realtimesignals
-# fluid
 
-shaders.select('brain')
+shaders.select('atom')

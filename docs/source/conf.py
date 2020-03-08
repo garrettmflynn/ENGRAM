@@ -14,6 +14,9 @@ import os
 import sys
 sys.path.insert(1, os.path.abspath('../../'))
 
+package_path = os.path.abspath('../..')
+os.environ['PYTHONPATH'] = ':'.join((package_path, os.environ.get('PYTHONPATH', '')))
+
 
 # -- Project information -----------------------------------------------------
 
@@ -22,7 +25,7 @@ copyright = '2020, Garrett Flynn'
 author = 'Garrett Flynn'
 
 # The full version, including alpha/beta/rc tags
-release = '0.0.1'
+release = '0.0.2'
 
 
 # -- General configuration ---------------------------------------------------

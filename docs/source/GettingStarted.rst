@@ -23,10 +23,8 @@ Requirements
 * Numpy
 * Scipy
 * Pandas
-* Glumpy
-
-.. important:: 
-  To use Glumpy, you must install ``pyopengl`` and ``freetype-py`` manually, then change the ``glumpy/ext/__init__.py`` to install this local version of ``freetype`` rather than the included Glumpy version.
+* Vispy
+* PyQt5
 
 Features
 -----------

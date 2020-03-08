@@ -36,10 +36,9 @@ for the main developer's senior thesis project.
 **Coming soon:** We visualize the process of memory formation
 using hippocampal MNI coordinates.
 
+.. include:: diary/March2020/3.rst
+
 .. jupyter-execute:: 
 
-  name = 'visualizations'
-  print('hello ' + name + '!')
-
-
-.. include:: diary/March2020/3.rst
+  from engram.episodic import shaders
+  shaders.select('fireworks')

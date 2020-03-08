@@ -1,3 +1,4 @@
 .. admonition:: Diary Entry #3
 
-  *Shaders are awesome! Glumpy, on the other hand, is a bit finicky...*
+  *Shaders are awesome! Neither Glumpy nor VisPy will insert*
+  *into the Jupyter-Sphinx extension—-but I just can't resist...*
