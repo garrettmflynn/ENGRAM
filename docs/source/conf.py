@@ -94,7 +94,7 @@ html_theme_options = {
 
     # Global TOC depth for "site" navbar tab. (Default: 1)
     # Switching to -1 shows all levels.
-    'globaltoc_depth': 1,
+    'globaltoc_depth': -1,
 
     # Include hidden TOCs in Site navbar?
     #
@@ -105,9 +105,9 @@ html_theme_options = {
     # Values: "true" (default) or "false"
     'globaltoc_includehidden': "true",
 
-    # # HTML navbar class (Default: "navbar") to attach to <div> element.
-    # # For black navbar, do "navbar navbar-inverse"
-    # 'navbar_class': "navbar navbar-inverse",
+    # HTML navbar class (Default: "navbar") to attach to <div> element.
+    # For black navbar, do "navbar navbar-inverse"
+    'navbar_class': "navbar",
 
     # Fix navigation bar to top of page?
     # Values: "true" (default) or "false"
@@ -115,19 +115,12 @@ html_theme_options = {
 
     # Location of link to source.
     # Options are "nav" (default), "footer" or anything else to exclude.
-    'source_link_position': "footer",
+    'source_link_position': "",
 
     # Bootswatch (http://bootswatch.com/) theme.
     #
-    # Options are nothing (default) or the name of a valid theme
-    # such as "cosmo" or "sandstone".
-    #
-    # The set of valid themes depend on the version of Bootstrap
-    # that's used (the next config option).
-    #
-    # Currently, the supported themes are:
-    # - Bootstrap 2: https://bootswatch.com/2
-    # - Bootstrap 3: https://bootswatch.com/3
+    # Options are nothing with "" (default) or the name of a valid theme
+    # such as "amelia" or "cosmo".
     'bootswatch_theme': "flatly",
 
     # Choose Bootstrap version.
@@ -152,10 +145,30 @@ html_theme_options = {
 #     'titles_only': False
 # }
 
-
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
 # html_logo = 'images/engramlogo.png'
+
+html_css_files = [
+    'css/font-mfizz.css',
+    'css/font-awesome.css',
+    'style.css'
+    ]
+
+
+# # Custom sidebar templates, maps document names to template names.
+html_sidebars = {'documentation*': ['localtoc.html', 'searchbox.html'],
+                 'installation*' : ['localtoc.html', 'searchbox.html'],
+                 'modern-gl*'    : ['localtoc.html', 'searchbox.html'],
+                 'api*'          : ['localtoc.html', 'searchbox.html'],
+#                 'resources*'    : ['localtoc.html', 'searchbox.html'],
+                 }
+
+# If true, "Created using Sphinx" is shown in the HTML footer. Default is True.
+html_show_sphinx = False
+
+# If true, "(C) Copyright ..." is shown in the HTML footer. Default is True.
+html_show_copyright = False

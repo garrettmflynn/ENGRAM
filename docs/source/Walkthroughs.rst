@@ -1,8 +1,11 @@
+.. _walkthroughs:
+
 ==============
 Walkthroughs
 ==============
+.. container:: lead
 
-Walkthroughs included in ENGRAM.
+    To help you get started.
 
 How to Build a Memory Prosthesis
 -----------------------------------

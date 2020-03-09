@@ -1,7 +1,12 @@
 .. _docs:
 
+======================================
 Documentation
 ======================================
+
+.. container:: lead
+
+   The core documentation for ENGRAM.
 
 Getting Started
 ---------------------
@@ -63,5 +68,9 @@ Working
   api/loggers
   api/streams
 
+Indices and tables
+==================
 
-
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
