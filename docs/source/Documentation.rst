@@ -1,14 +1,24 @@
-.. _api:
+.. _docs:
 
-===================
+Documentation
+======================================
+
+Getting Started
+---------------------
+.. toctree::
+    :maxdepth: 1
+    
+    GettingStarted
+
+
 API Reference Guide
-===================
+---------------------
 .. important:: 
   In addition to using **ENGRAM** as a standalone app, you can also leverage its API in your own code.
 
 
 Declarative
-----------------------
+^^^^^^^^^^^^^^^^^^^^^
 
 .. toctree::
    :maxdepth: 1
@@ -18,7 +28,7 @@ Declarative
    api/mneme
 
 Procedural
-----------------------
+^^^^^^^^^^^^^^^^^^^^^
 
 .. toctree::
   :maxdepth: 1
@@ -35,7 +45,7 @@ Procedural
   api/analyze
 
 Episodic
-----------------------
+^^^^^^^^^^^^^^^^^^^^^
 
 .. toctree::
   :maxdepth: 1
@@ -45,7 +55,7 @@ Episodic
   api/terminal
 
 Working
-----------------------
+^^^^^^^^^^^^^^^^^^^^^
 
 .. toctree::
   :maxdepth: 1

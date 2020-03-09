@@ -46,6 +46,9 @@ def LFP(data,settings):
     
     return lfp, t,f
 
+
+
+
 def STFT(data,settings):
 
     lfp,t,f = LFP(data,settings)

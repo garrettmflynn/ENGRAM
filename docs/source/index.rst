@@ -1,32 +1,31 @@
+.. title:: ENGRAM
+
 .. module:: engram
 
-================================================
-ENGRAM
-================================================
+| 
+
+.. image:: images/engramlogo.png
+  :width: 400
+  :alt: Alternative text
+
+| 
 
 **Encoding Graphical Representations of Activated Memories**
 is an open-source Python package for developing cognitive neural prostheses.
 
 |PyPI badge| |GitHub badge| |Docs badge| |License badge|
 
+
 .. toctree::
     :maxdepth: 2
-    :caption: Core Documentation
+    :hidden:
     
-    GettingStarted
+    Documentation
     Walkthroughs
-    APIReferenceGuide
+    FurtherReadings
     Contributing
     ReleaseNotes
     Acknowledgements
-
-.. toctree::
-    :maxdepth: 1
-    :caption: Beyond Engrams
-
-    NeuroDocs
-
-
 
 .. |PyPI badge| image:: https://img.shields.io/pypi/v/engram.svg?logo=python&logoColor=white
     :target: PyPI_

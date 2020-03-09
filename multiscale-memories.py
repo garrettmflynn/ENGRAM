@@ -1,4 +1,5 @@
 from engram.declarative import ID
+from engram.episodic import shaders
 from settings import ramconfig
 import os
 
@@ -24,4 +25,6 @@ else:
     print('Loaded!')
 
 
-id.model('channels', 'CNN')
+# id.model('channels', 'CNN')
+
+shaders.select('spectrogram',id.traces['Session0']['data'][0],settings)

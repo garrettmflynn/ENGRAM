@@ -9,7 +9,7 @@ Notes on Documentating the Brain
   **This page details the core developer's personal exploration**
   **of neuroscience software documentation.**
   
-  For ENGRAM's documentation, see :ref:`getting-started` or our :ref:`api`.
+  For ENGRAM's documentation, see the :ref:`docs` page.
 
 The Problem
 --------------------------------------------

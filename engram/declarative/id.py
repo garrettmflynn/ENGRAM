@@ -45,7 +45,7 @@ class ID(object):
         if session is None:
             session = "Trace" + str(len(self.traces))
         self.traces[session] = {'Data': [], 'fs': None,
-                                'units': None, 'regions': {}}
+                                'units': None, 'regions': {}, 'events':{},'neurons':{}}
 
         print('Loading new trace...')
 
@@ -70,9 +70,11 @@ class ID(object):
             data = filters.select('bandpass', min=0, max=self.settings['fs'],
                                   fs=fs, order=5)
             downsample = round(fs/self.settings['fs'])
-            self.settings['fs'] = fs/downsample
+            self.traces[session]['fs'] = fs/downsample
             data = data[0::downsample]
-            print('Downsampled to ' + self.settings['fs'] + 'Hz')
+            print('Downsampled to ' + self.traces[session] + 'Hz')
+        else:
+            self.traces[session]['fs'] = fs
         self.traces[session]['Data'] = data
         self.traces[session]['units'] = units
 
@@ -91,8 +93,7 @@ class ID(object):
         filename = os.path.join(tracedir, f"{self.id}",
                                           f"{self.id}{extension}")
         reader = neo.get_io(filename=filename)
-        self.traces[session]['events'],
-        self.traces[session]['neurons'] = events.select(self.project, reader)
+        self.traces[session]['events'], self.traces[session]['neurons'] = events.select(self.project, reader)
 
     def createEngrams(self, settings=None):
 
@@ -102,8 +103,7 @@ class ID(object):
         for trace in self.traces:
 
             # Derive Features from Each Trace
-            feature, self.settings['t_feat'],
-            self.settings['f_feat'] = features.select(
+            feature, self.settings['t_feat'], self.settings['f_feat'] = features.select(
                                             self.settings['feature'],
                                             self.traces[trace]['Data'],
                                             self.settings
@@ -122,14 +122,12 @@ class ID(object):
 
                             # Select Proper Timebins from Features
                             if 'prev_len' in locals():
-                                featureset,
-                                prev_len = data.select(feature=feature[channel],
-                                            time=time, settings=self.settings,
-                                            prev_len=prev_len)
+                                featureset, prev_len = data.select(feature=feature[channel],
+                                                                    time=time, settings=self.settings,
+                                                                    prev_len=prev_len)
                             else:
-                                featureset, 
-                                prev_len = data.select(feature=feature[channel],
-                                           time=time, settings=self.settings)
+                                featureset, prev_len = data.select(feature=feature[channel],
+                                                                    time=time, settings=self.settings)
 
                             # Check Region of Origin
                             for region in self.traces[trace]['regions']:
@@ -139,8 +137,7 @@ class ID(object):
 
                                     current_region = region
 
-                            channel_name = self.settings['all_channels']
-                            [channel]
+                            channel_name = self.settings['all_channels'][channel]
 
                             engram[trial][channel_name] = {}
                             engram[trial]       \
