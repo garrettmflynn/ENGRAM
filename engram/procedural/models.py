@@ -7,6 +7,7 @@ def select(model,shape):
     selection = {
         "CNN": cnn,
         'MIMO': mimo,
+        "LSTM":lstm,
         'custom':custom
     }
     # Get the function from switcher dictionary
@@ -16,6 +17,17 @@ def select(model,shape):
 
 def mimo(shape):
     print('in development')
+
+def lstm():
+    print(shape)
+    model = Sequential()
+    model.add(LSTM(32,input_shape=shape))
+    model.add(Dense(1))
+
+# INPUT DIMENSION MEANINGS
+# 1. Samples. One sequence is one sample. A batch is comprised of one or more samples.
+# 2. Time Steps. One time step is one point of observation in the sample.
+# 3. Features. One feature is one observation at a time step.
 
 def cnn(shape):
 

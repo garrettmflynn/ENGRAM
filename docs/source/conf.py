@@ -14,7 +14,6 @@ import os
 import sys
 import sphinx_bootstrap_theme
 sys.path.insert(1, os.path.abspath('../../'))
-import engram
 
 #package_path = os.path.abspath('../..')
 # os.environ['PYTHONPATH'] = ':'.join((package_path, os.environ.get('PYTHONPATH', '')))
@@ -27,7 +26,7 @@ author = 'Garrett Flynn'
 
 # The full version, including alpha/beta/rc tags
 # The full version, including alpha/beta/rc tags.
-release = engram.__version__
+release = '0.0.2'
 # The short X.Y version.
 version = '.'.join(release.split('.')[:2])
 
