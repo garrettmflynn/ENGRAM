@@ -12,7 +12,6 @@
 
 import os
 import sys
-import sphinx_bootstrap_theme
 sys.path.insert(1, os.path.abspath('../../'))
 
 #package_path = os.path.abspath('../..')
@@ -25,7 +24,6 @@ copyright = '2020, Garrett Flynn'
 author = 'Garrett Flynn'
 
 # The full version, including alpha/beta/rc tags
-# The full version, including alpha/beta/rc tags.
 release = '0.0.2'
 # The short X.Y version.
 version = '.'.join(release.split('.')[:2])
@@ -52,123 +50,32 @@ templates_path = ['_templates']
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = []
 
-
-# -- Options for HTML output -------------------------------------------------
-
-# The theme to use for HTML and HTML Help pages.  See the documentation for
-# a list of builtin themes.
-#
-
-# Activate the theme.
-html_theme = 'bootstrap'
-html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
-
+html_theme = 'sphinx_rtd_theme'
 html_theme_options = {
-    # Navigation bar title. (Default: ``project`` value)
-    'navbar_title': "ENGRAM",
-
-    # Tab name for entire site. (Default: "Site")
-    'navbar_site_name': "Site",
-
-    # A list of tuples containing pages or urls to link to.
-    # Valid tuples should be in the following forms:
-    #    (name, page)                 # a link to a page
-    #    (name, "/aa/bb", 1)          # a link to an arbitrary relative url
-    #    (name, "http://example.com", True) # arbitrary absolute url
-    # Note the "1" or "True" value above as the third argument to indicate
-    # an arbitrary url.
-    'navbar_links': [
-        ("Documentation","Documentation"),
-        ("Walkthroughs", "Walkthroughs"),
-        ("Further Readings", "FurtherReadings"),
-    ],
-
-    # Render the next and previous page links in navbar. (Default: true)
-    'navbar_sidebarrel': False,
-
-    # Render the current pages TOC in the navbar. (Default: true)
-    'navbar_pagenav': True,
-
-    # Tab name for the current pages TOC. (Default: "Page")
-    'navbar_pagenav_name': "",
-
-    # Global TOC depth for "site" navbar tab. (Default: 1)
-    # Switching to -1 shows all levels.
-    'globaltoc_depth': -1,
-
-    # Include hidden TOCs in Site navbar?
-    #
-    # Note: If this is "false", you cannot have mixed ``:hidden:`` and
-    # non-hidden ``toctree`` directives in the same page, or else the build
-    # will break.
-    #
-    # Values: "true" (default) or "false"
-    'globaltoc_includehidden': "true",
-
-    # HTML navbar class (Default: "navbar") to attach to <div> element.
-    # For black navbar, do "navbar navbar-inverse"
-    'navbar_class': "navbar",
-
-    # Fix navigation bar to top of page?
-    # Values: "true" (default) or "false"
-    'navbar_fixed_top': "true",
-
-    # Location of link to source.
-    # Options are "nav" (default), "footer" or anything else to exclude.
-    'source_link_position': "",
-
-    # Bootswatch (http://bootswatch.com/) theme.
-    #
-    # Options are nothing with "" (default) or the name of a valid theme
-    # such as "amelia" or "cosmo".
-    'bootswatch_theme': "flatly",
-
-    # Choose Bootstrap version.
-    # Values: "3" (default) or "2" (in quotes)
-    'bootstrap_version': "3",
+    'canonical_url': '',
+    'analytics_id': 'UA-XXXXXXX-1',  #  Provided by Google in your dashboard
+    'logo_only': True,
+    'display_version': True,
+    'prev_next_buttons_location': 'bottom',
+    'style_external_links': False,
+    'style_nav_header_background': 'black',
+    # Toc options
+    'collapse_navigation': True,
+    'sticky_navigation': True,
+    'navigation_depth': 4,
+    'includehidden': True,
+    'titles_only': False
 }
-
-# html_theme = 'sphinx_rtd_theme'
-# html_theme_options = {
-#     'canonical_url': '',
-#     'analytics_id': 'UA-XXXXXXX-1',  #  Provided by Google in your dashboard
-#     'logo_only': True,
-#     'display_version': True,
-#     'prev_next_buttons_location': 'bottom',
-#     'style_external_links': False,
-#     'style_nav_header_background': 'black',
-#     # Toc options
-#     'collapse_navigation': True,
-#     'sticky_navigation': True,
-#     'navigation_depth': 4,
-#     'includehidden': True,
-#     'titles_only': False
-# }
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
-# html_logo = 'images/engramlogo.png'
-
-html_css_files = [
-    'css/font-mfizz.css',
-    'css/font-awesome.css',
-    'style.css'
-    ]
-
-
-# # Custom sidebar templates, maps document names to template names.
-html_sidebars = {'documentation*': ['localtoc.html', 'searchbox.html'],
-                 'installation*' : ['localtoc.html', 'searchbox.html'],
-                 'modern-gl*'    : ['localtoc.html', 'searchbox.html'],
-                 'api*'          : ['localtoc.html', 'searchbox.html'],
-#                 'resources*'    : ['localtoc.html', 'searchbox.html'],
-                 }
+html_logo = 'images/engramlogo.png'
 
 # If true, "Created using Sphinx" is shown in the HTML footer. Default is True.
-html_show_sphinx = False
+html_show_sphinx = True
 
 # If true, "(C) Copyright ..." is shown in the HTML footer. Default is True.
-html_show_copyright = False
+html_show_copyright = True
