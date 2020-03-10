@@ -3,4 +3,4 @@
 :mod:'engram.episodic' provides functions for visualizing Engrams
 '''
 
-from . import (shaders,terminal)
+from . import (shaders,terminal,graphics)

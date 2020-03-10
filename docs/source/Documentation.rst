@@ -4,10 +4,6 @@
 Documentation
 ======================================
 
-.. container:: lead
-
-   The core documentation for ENGRAM.
-
 Getting Started
 ---------------------
 .. toctree::

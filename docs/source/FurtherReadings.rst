@@ -4,10 +4,6 @@
 Further Readings
 ======================================
 
-.. container:: lead
-
-   Explorations of visualization in neuroscience.
-
 Thesis Documentation
 -----------------------
 .. toctree::

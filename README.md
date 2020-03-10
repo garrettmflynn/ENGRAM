@@ -16,8 +16,8 @@ Install ENGRAM by running:
 
 ## Contribute
 
-* Issue Tracker: github.com/garrettmflynn/engram/issues
-* Source Code: github.com/garrettmflynn/engram
+* Issue Tracker: https://github.com/garrettmflynn/engram/issues
+* Source Code: https://github.com/garrettmflynn/engram
 
 ## Support
 
