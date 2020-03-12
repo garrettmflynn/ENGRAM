@@ -21,11 +21,21 @@ version = '.'.join(release.split('.')[:2])
 
 master_doc = 'index'
 
-extensions = ['sphinxcontrib.bibtex','sphinx.ext.autodoc']
+extensions = [
+    'sphinxcontrib.bibtex',
+    'sphinx.ext.autodoc',
+    'sphinx.ext.doctest',
+    'sphinx.ext.extlinks',
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.todo',
+    'sphinx.ext.coverage',
+    'sphinx.ext.viewcode',
+    'sphinxcontrib.programoutput',
+]
 
 # ,'jupyter_sphinx.execute']
 
-autodoc_mock_imports = ['engram,tensorflow','vispy']
+# autodoc_mock_imports = ['engram,tensorflow','vispy']
 
 templates_path = ['_templates']
 
