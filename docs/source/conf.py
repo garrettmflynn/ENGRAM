@@ -12,7 +12,7 @@
 
 import os
 import sys
-sys.path.insert(1, os.path.abspath('../../engram'))
+sys.path.insert(1, os.path.abspath('../../'))
 
 #package_path = os.path.abspath('../..')
 # os.environ['PYTHONPATH'] = ':'.join((package_path, os.environ.get('PYTHONPATH', '')))
