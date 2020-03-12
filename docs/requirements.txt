@@ -1,5 +1,6 @@
 sphinxcontrib-bibtex
 sphinx_bootstrap_theme
+engram
 # jupyter-sphinx
 # numpy 
 # neo
