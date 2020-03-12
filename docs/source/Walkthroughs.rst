@@ -6,10 +6,10 @@ Walkthroughs
 
 .. warning::
 
-    Unfortunately the USC RAM project was not designed to be open source from the start.
+    Unfortunately the `Restoring Active Memory (RAM) program`_ at USC was not designed to be open source from the start.
     As such, **we cannot release our data since informed consent was not** 
     **obtained from each subject to share their data**
-    (though personally identifiable information could be removed to protect subject confidentiality).
+    (though personally identifiable information might be removed to protect subject confidentiality).
 
 How to Build a Memory Prosthesis
 -----------------------------------
@@ -26,3 +26,4 @@ a specific application of cortical prostheses.
     HMP/MDM
     HMP/Conclusion
 
+.. _Restoring Active Memory (RAM) program:  https://www.darpa.mil/program/restoring-active-memory
