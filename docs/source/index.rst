@@ -13,7 +13,7 @@ ENGRAM
 is an open source Python package 
 for developing cognitive neural prostheses.
 
-|PyPI badge| |GitHub badge| |Docs badge| |License badge|
+|PyPI badge| |GitHub badge| |Docs badge| |Travis badge| |License badge|
 
 .. toctree::
     :maxdepth: 2
@@ -42,7 +42,12 @@ for developing cognitive neural prostheses.
     :target: License_
     :alt: License
 
+.. |Travis badge| image:: https://img.shields.io/travis/com/github/GarrettMFlynn/ENGRAM/master.svg?logo=travis-ci&logoColor=white
+   :target: Travis_
+   :alt: Travis build status
+
 .. _GitHub:         https://github.com/garrettmflynn/engram
 .. _ReadTheDocs:    https://readthedocs.org/projects/engram
 .. _PyPI:           https://pypi.org/project/engram/
 .. _License:        https://www.gnu.org/licenses/gpl-3.0
+.. _Travis:         https://travis-ci.org/github/GarrettMFlynn/ENGRAM
