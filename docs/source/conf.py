@@ -35,7 +35,13 @@ extensions = [
 
 # ,'jupyter_sphinx.execute']
 
-# autodoc_mock_imports = ['engram,tensorflow','vispy']
+autodoc_mock_imports = ['engram',
+                        'engram.working',
+                        'engram.declarative',
+                        'engram.procedural',
+                        'engram.episodic',
+                        'tensorflow',
+                        'vispy']
 
 templates_path = ['_templates']
 
