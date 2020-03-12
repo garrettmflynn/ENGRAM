@@ -25,7 +25,7 @@ extensions = ['sphinxcontrib.bibtex','sphinx.ext.autodoc']
 
 # ,'jupyter_sphinx.execute']
 
-autodoc_mock_imports = ['tensorflow','vispy']
+autodoc_mock_imports = ['engram,tensorflow','vispy']
 
 templates_path = ['_templates']
 
