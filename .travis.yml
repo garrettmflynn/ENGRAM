@@ -1,12 +1,78 @@
+dist: xenial   # required for Python >= 3.7
+
 language: python
 python:
-  - "3.7"
+    - "3.7"
 
-# command to install dependencies
+matrix:
+    include:
+        - name: Sphinx docs
+          python: "3.7"
+          env: JOB_REQS="requirements-docs.txt"
+          script:
+              - cd docs
+              - make html
+          after_success: skip
+
+    fast_finish: true
+
+env: JOB_REQS="requirements-tests.txt"
+
+# services:
+#     - xvfb  # create a virtual display on the headless server for gui tests
+
+install:
+    - sudo apt-get update
+
+    # install conda
+    - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+    - bash miniconda.sh -b -p $HOME/miniconda
+    - export PATH="$HOME/miniconda/bin:$PATH"
+    - hash -r
+    - conda config --set always_yes yes --set changeps1 no
+    - conda update -q conda
+    - conda info -a
+
+    # create python environment
+    - conda config --add channels conda-forge
+    - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION
+    - source activate test-environment
+    - echo "INSTALLING REQS FOR ENGRAM"
+    - conda install -c conda-forge av pyqt  # conda-forge's pyqt works better on Travis than pip's PyQt5
+    - echo "INSTALLING REQS FOR THIS JOB"
+    - pip install -r ${JOB_REQS};
+
+    # install package
+    - echo "INSTALLING ENGRAM"
+    - python setup.py install
+
+before_script:
+    # list versions
+    - python --version
+    - python -c "import os, sys; assert sys.version_info[:2] == tuple(map(int, os.environ['TRAVIS_PYTHON_VERSION'].split('.')))[:2]"
+    - pip -V
+    - pip list
+    - conda list
+
+script:
+    # run tests
+    nosetests --with-coverage --cover-package=engram
+
+after_success:
+    # report test coverage to Coveralls
+    coveralls || echo "coveralls failed"
+
+
+
+language: python
+python:
+  - "3.7.1"
+
 install:
   - pip install -r requirements.txt
-  - pip install .
+  - echo "INSTALLING ENGRAM"
+  - python setup.py install
 
 # command to run tests, e.g. python setup.py test
 script:
-  nosetests --with-coverage --cover-package=engram
+  - nosetests --with-coverage --cover-package=engram
