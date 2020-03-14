@@ -19,11 +19,7 @@ Requirements
 
 * **Python 3.7**
 * Neo
-* Tensorflow
-
-.. note::
-    **Must be installed manually**
-
+* Tensorflow (**must install manually**)
 * Numpy
 * Scipy
 * Vispy
@@ -37,30 +33,3 @@ Features
 * **Visualize multi-input multi-output (MIMO) modeling** of electrophysiology recordings using ``engram.episodic``
 * Leverage ROOTS_ to **grow artificial connections between functionally connected neurons**
 * **Online data processing for OpenBCI headsets** using ``engram.working``
-
-Examples
----------
-
-multiscale-memories
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-*Song Lab* (2020)
-
-`multiscale-memories <https://github.com/GarrettMFlynn/multiscale-memories>`_
-is a custom pipeline developed at Song Lab 
-for decoding memory contents from human hippocampal recordings.
-
-kinesis-v2
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-*Ahmanson Lab* (2020)
-
-`kinesis-v2 <https://github.com/Mousai-Neurotechnologies/kinesis-v2>`_
-is a movement decoding pipeline for OpenBCI headsets 
-that integrates automatic motion tracking with real-time signals processing. 
-
-episodic-memories
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-*Garrett Flynn* (2020)
-
-A personal project for shader-based representation of memories
-
-.. _ROOTS:          https://github.com/bingsome/roots

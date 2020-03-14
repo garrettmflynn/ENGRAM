@@ -20,8 +20,8 @@ for developing cognitive neural prostheses.
     :hidden:
     
     Documentation
-    Walkthroughs
-    FurtherReadings
+    .. Walkthroughs
+    .. FurtherReadings
     Contributing
     ReleaseNotes
     Acknowledgements

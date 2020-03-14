@@ -14,9 +14,6 @@ Getting Started
 
 API Reference Guide
 ---------------------
-.. important:: 
-  In addition to using **ENGRAM** as a standalone app, you can also leverage its API in your own code.
-
 
 Declarative
 ^^^^^^^^^^^^^^^^^^^^^
