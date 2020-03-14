@@ -3,3 +3,8 @@ sphinx-rtd-theme<0.5
 readthedocs-sphinx-ext<1.1
 sphinxcontrib.bibtex
 sphinxcontrib.programoutput
+neo
+numpy
+pyqt5
+scipy
+vispy
