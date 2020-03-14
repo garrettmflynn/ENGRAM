@@ -1,6 +1,6 @@
-neo==0.8.0
-numpy==1.18.1
-PyQt5==5.14.1
-scipy==1.4.1
-tensorflow==2.1.0
-vispy==0.6.4
+neo
+numpy
+pyqt5
+scipy
+tensorflow
+vispy
