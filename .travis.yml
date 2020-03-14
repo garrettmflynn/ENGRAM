@@ -61,18 +61,3 @@ script:
 after_success:
     # report test coverage to Coveralls
     coveralls || echo "coveralls failed"
-
-
-
-language: python
-python:
-  - "3.7.1"
-
-install:
-  - pip install -r requirements.txt
-  - echo "INSTALLING ENGRAM"
-  - python setup.py install
-
-# command to run tests, e.g. python setup.py test
-script:
-  - nosetests --with-coverage --cover-package=engram
