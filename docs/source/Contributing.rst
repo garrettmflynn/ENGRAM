@@ -29,14 +29,14 @@ Garrett Flynn
     at garrett@garrettflynn.com 
     with any questions.
 
-Alice Wu
-^^^^^^^^^^^^^^
-*University of Southern California*
+.. Alice Wu
+.. ^^^^^^^^^^^^^^
+.. *University of Southern California*
 
-.. note:: 
+.. .. note:: 
 
-    Alice developed the 
-    **RNN + CNN model for training models on 3D data inputs** 
-    (i.e. channels x times x frequencies)
+..     Alice developed the 
+..     **RNN + CNN model for training models on 3D data inputs** 
+..     (i.e. channels x times x frequencies)
 
 If we've somehow missed you off the list we're very sorry - please let us know!
