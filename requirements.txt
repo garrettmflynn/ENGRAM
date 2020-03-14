@@ -2,5 +2,4 @@ neo
 numpy
 pyqt5
 scipy
-tensorflow
 vispy
