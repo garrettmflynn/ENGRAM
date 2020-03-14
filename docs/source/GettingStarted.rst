@@ -20,9 +20,12 @@ Requirements
 * **Python 3.7**
 * Neo
 * Tensorflow
+
+.. note::
+    **Must be installed manually**
+
 * Numpy
 * Scipy
-* Pandas
 * Vispy
 * PyQt5
 
