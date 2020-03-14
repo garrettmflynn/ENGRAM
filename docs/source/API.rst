@@ -1,16 +1,4 @@
-.. _docs:
-
-======================================
-Documentation
-======================================
-
-Getting Started
----------------------
-.. toctree::
-    :maxdepth: 1
-    
-    GettingStarted
-
+.. _api:
 
 API Reference Guide
 ---------------------
