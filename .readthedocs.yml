@@ -15,7 +15,7 @@ formats: all
 # Install engram so that it can be imported in conf.py for its version string
 # and usage message
 python:
-  version: 3.7.3
+  version: 3.7
   install:
     - requirements: requirements-docs.txt
     - method: pip

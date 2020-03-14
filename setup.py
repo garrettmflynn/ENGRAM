@@ -98,7 +98,7 @@ setup(
     include_package_data = True,
     install_requires = install_requires,
     extras_require = extras_require,
-    python_requires='==3.7',
+    python_requires='==3.7.3',
     # entry_points = {'console_scripts': ['engram=engram.scripts:main']},
     long_description = README,
     long_description_content_type="text/markdown",
