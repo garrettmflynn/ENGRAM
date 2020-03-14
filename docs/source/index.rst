@@ -42,7 +42,7 @@ for developing cognitive neural prostheses.
     :target: License_
     :alt: License
 
-.. |Travis badge| image:: https://img.shields.io/travis/com/github/GarrettMFlynn/ENGRAM/master.svg?logo=travis-ci&logoColor=white
+.. |Travis badge| image:: https://travis-ci.org/GarrettMFlynn/ENGRAM.svg?branch=master
    :target: Travis_
    :alt: Travis build status
 
