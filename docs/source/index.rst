@@ -42,7 +42,7 @@ for developing cognitive neural prostheses.
     :target: License_
     :alt: License
 
-.. |Travis badge| image:: https://travis-ci.org/GarrettMFlynn/ENGRAM.svg?branch=master
+.. |Travis badge| image:: https://img.shields.io/travis/com/garrettmflynn/engram/master.svg?logo=travis-ci&logoColor=white
    :target: Travis_
    :alt: Travis build status
 
@@ -50,4 +50,4 @@ for developing cognitive neural prostheses.
 .. _ReadTheDocs:    https://readthedocs.org/projects/engram
 .. _PyPI:           https://pypi.org/project/engram/
 .. _License:        https://www.gnu.org/licenses/gpl-3.0
-.. _Travis:         https://travis-ci.org/github/GarrettMFlynn/ENGRAM
+.. _Travis:         https://travis-ci.com/github/GarrettMFlynn/ENGRAM

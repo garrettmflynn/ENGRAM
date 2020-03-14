@@ -6,7 +6,7 @@ is an open-source Python package for developing cognitive neural prostheses.
 [![PyPI badge](https://img.shields.io/pypi/v/engram.svg?logo=python&logoColor=white)](https://pypi.org/project/engram/)
 [![Github badge](https://img.shields.io/badge/github-source_code-blue.svg?logo=github&logoColor=white)](https://github.com/garrettmflynn/engram)
 [![Docs badge](https://img.shields.io/readthedocs/engram/latest.svg?logo=read-the-docs&logoColor=white)](https://readthedocs.org/projects/engram)
-[![Travis badge](https://travis-ci.org/GarrettMFlynn/ENGRAM.svg?branch=master)](https://travis-ci.org/github/GarrettMFlynn/ENGRAM)
+[![Travis badge](https://img.shields.io/travis/com/garrettmflynn/engram/master.svg?logo=travis-ci&logoColor=white)](https://travis-ci.com/github/GarrettMFlynn/ENGRAM)
 [![License badge](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 
