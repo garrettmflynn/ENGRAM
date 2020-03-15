@@ -6,7 +6,7 @@ Encoding
 What is it?
 --------------------------------
 
-*Coming soon...*
+Engrams are memory codes stored *someplace else* than the hippocampus.
 
 
 Subheader 1

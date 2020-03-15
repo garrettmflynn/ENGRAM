@@ -119,12 +119,6 @@ Appendix: Some Cool Things You Can Do with Sphinx
 ..   from engram.episodic import shaders
 ..   shaders.select('fireworks')
 
-
-References
---------------------------------------------
-
-.. bibliography:: references.bib
-
 .. _Ephyviewer:     https://github.com/NeuralEnsemble/ephyviewer
 .. _EEGLearn:       https://github.com/pbashivan
 .. _Wagner Lab:     https://github.com/WagnerLabPapers
