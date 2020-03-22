@@ -1,9 +1,3 @@
-.. module:: engram
-.. module:: engram.declarative
-.. module:: engram.procedural
-.. module:: engram.episodic
-
-
 
 ==================
 ENGRAM
@@ -15,21 +9,12 @@ for developing cognitive neural prostheses.
 
 |PyPI badge| |GitHub badge| |Docs badge| |Travis badge| |License badge|
 
-Key Features
----------------
-* **Convert electrophysiology data from multiple brain regions into Engrams** using ``engram.declarative``
-* **Model multi-channel electrophysiology recordings** using multiple machine learning techniques (i.e. MIMO, CNN, RNN, etc) using ``engram.procedural``
-* **Visualize multi-input multi-output (MIMO) modeling** of electrophysiology recordings using ``engram.episodic``
-* Grow **artificial connections between functionally connected neurons**
-* **Online data processing for OpenBCI headsets** using ``engram.working``
-
 .. toctree::
     :maxdepth: 2
     :hidden:
     
     GettingStarted
-    .. Walkthroughs
-    .. FurtherReadings
+    Walkthrough
     API
     Contributing
     ReleaseNotes

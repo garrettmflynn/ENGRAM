@@ -4,7 +4,11 @@
 
 import os
 import sys
-sys.path.insert(1, os.path.abspath('../..'))
+import os
+
+package_path = os.path.abspath('../..')
+os.environ['PYTHONPATH'] = ':'.join((package_path, os.environ.get('PYTHONPATH', '')))
+# sys.path.insert(1, os.path.abspath('../..'))
 
 # -- Project information -----------------------------------------------------
 
@@ -31,17 +35,12 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinx.ext.viewcode',
     'sphinxcontrib.programoutput',
+    'jupyter_sphinx.execute',
 ]
 
 # ,'jupyter_sphinx.execute']
 
-autodoc_mock_imports = ['engram',
-                        'engram.working',
-                        'engram.declarative',
-                        'engram.procedural',
-                        'engram.episodic',
-                        'tensorflow',
-                        'vispy']
+autodoc_mock_imports = ['tensorflow']
 
 templates_path = ['_templates']
 

@@ -21,7 +21,8 @@ def select(name,data=None,settings=None):
         "atom":atom,
         "oscilloscope":oscilloscope,
         "engram":engram,
-        "spectrogram":spectrogram
+        "spectrogram":spectrogram,
+        "fluid":fluid,
     }
     
     # Get the function from switcher dictionary
@@ -32,62 +33,288 @@ def select(name,data=None,settings=None):
     else:
         return func(data,settings)
 
-
 def engram():
 
-# -*- coding: utf-8 -*-
-# -----------------------------------------------------------------------------
-# Copyright (c) 2015, Vispy Development Team. All Rights Reserved.
-# Distributed under the (new) BSD License. See LICENSE.txt for more info.
-# -----------------------------------------------------------------------------
-# Author: Nicolas P .Rougier
-# Date:   04/03/2014
-# -----------------------------------------------------------------------------
+    #!/usr/bin/env python
+    # -*- coding: utf-8 -*-
+    # vispy: gallery 20
+    # -----------------------------------------------------------------------------
+    # Copyright (c) 2014, Nicolas P. Rougier, Guillaume Bâty. All Rights Reserved.
+    # Distributed under the (new) BSD License.
+    # -----------------------------------------------------------------------------
+    # High frequency (below pixel resolution) function plot
+    #
+    #  -> http://blog.hvidtfeldts.net/index.php/2011/07/plotting-high-frequency-fun
+    #     ctions-using-a-gpu/
+    #  -> https://www.shadertoy.com/view/4sB3zz
+    # -----------------------------------------------------------------------------
+    from vispy import gloo, app, keys
 
-    from vispy import app, gloo
-    from vispy.gloo import Program
+    VERT_SHADER = """
+    attribute vec2 a_position;
+    void main (void)
+    {
+        gl_Position = vec4(a_position, 0.0, 1.0);
+    }
+    """
 
-    vertex = """
-        attribute vec4 color;
-        attribute vec2 position;
-        varying vec4 v_color;
-        
-        void main()
-        {
-            gl_Position = vec4(position, 0.0, 1.0);
-            v_color = color;
-        } """
+    FRAG_SHADER = """
+    uniform vec2 u_resolution;
+    uniform float u_global_time;
 
-    fragment = """
-        varying vec4 v_color;
-        void main()
-        {
-            gl_FragColor = v_color;
-        } """
+    float random (in vec2 _st) {
+        return fract(sin(dot(_st.xy,
+                            vec2(12.9898,78.233)))*
+            43758.5453123);
+    }
+
+    // --- NOISE ---
+
+    float noise (in vec2 _st) {
+        vec2 i = floor(_st);
+        vec2 f = fract(_st);
+
+        // Four corners in 2D of a tile
+        float a = random(i);
+        float b = random(i + vec2(1.0, 0.0));
+        float c = random(i + vec2(0.0, 1.0));
+        float d = random(i + vec2(1.0, 1.0));
+
+        vec2 u = f * f * (3.0 - 2.0 * f);
+
+        return mix(a, b, u.x) +
+                (c - a)* u.y * (1.0 - u.x) +
+                (d - b) * u.x * u.y;
+    }
+
+    // --- SAMPLE ---
+    #define NUM_OCTAVES 5
+
+    float fbm ( in vec2 _st) {
+        float v = 0.0;
+        float a = 0.5;
+        vec2 shift = vec2(100.0);
+        // Rotate to reduce axial bias
+        mat2 rot = mat2(cos(0.5), sin(0.5),
+                        -sin(0.5), cos(0.50));
+        for (int i = 0; i < NUM_OCTAVES; ++i) {
+            v += a * noise(_st);
+            _st = rot * _st * 2.0 + shift;
+            a *= 0.5;
+        }
+        return v;
+    }
+
+    void main() {
+        vec2 st = gl_FragCoord.xy/u_resolution.xy*3.;
+        // st += st * abs(sin(u_global_time*0.1)*3.0);
+        vec3 color = vec3(0.0);
+
+        vec2 q = vec2(0.);
+        q.x = fbm( st + 0.00*u_global_time);
+        q.y = fbm( st + vec2(1.0));
+
+        vec2 r = vec2(0.);
+        r.x = fbm( st + 1.0*q + vec2(1.7,9.2)+ 0.15*u_global_time );
+        r.y = fbm( st + 1.0*q + vec2(8.3,2.8)+ 0.126*u_global_time);
+
+        float f = fbm(st+r);
+
+        color = mix(vec3(0.101961,0.619608,0.666667),
+                    vec3(0.666667,0.666667,0.498039),
+                    clamp((f*f)*4.0,0.0,1.0));
+
+        color = mix(color,
+                    vec3(0,0,0.164706),
+                    clamp(length(q),0.0,1.0));
+
+        color = mix(color,
+                    vec3(0.666667,1,1),
+                    clamp(length(r.x),0.0,1.0));
+
+        gl_FragColor = vec4((f*f*f+.6*f*f+.5*f)*color,1.);
+    }
+
+    """
 
 
     class Canvas(app.Canvas):
         def __init__(self):
-            app.Canvas.__init__(self, size=(512, 512), title='Colored quad',
-                                keys='interactive')
+            app.Canvas.__init__(self, size=(800, 600), keys='interactive')
+            self.program = gloo.Program(VERT_SHADER, FRAG_SHADER)
+            self.program["u_global_time"] = 0
+            self.program['a_position'] = [(-1, -1), (-1, +1),
+                                        (+1, -1), (+1, +1)]
 
-            # Build program & data
-            self.program = Program(vertex, fragment, count=4)
-            self.program['color'] = [(1, 0, 0, 1), (0, 1, 0, 1),
-                                    (0, 0, 1, 1), (1, 1, 0, 1)]
-            self.program['position'] = [(-.5, -.5), (-.5, +.5),
-                                        (+.5, -.5), (+.5, +.5)]
+            self.apply_zoom()
 
-            gloo.set_viewport(0, 0, *self.physical_size)
+            gloo.set_state(blend=True,
+                        blend_func=('src_alpha', 'one_minus_src_alpha'))
+
+            self._timer = app.Timer('auto', connect=self.on_timer_event,
+                                    start=True)
 
             self.show()
 
+        def on_resize(self, event):
+            self.apply_zoom()
+
         def on_draw(self, event):
-            gloo.clear(color='white')
-            self.program.draw('triangle_strip')
+            gloo.clear('white')
+            self.program.draw(mode='triangle_strip')
+
+        def on_timer_event(self, event):
+            if self._timer.running:
+                self.program["u_global_time"] += event.dt
+            self.update()
+
+        def on_key_press(self, event):
+            if event.key is keys.SPACE:
+                if self._timer.running:
+                    self._timer.stop()
+                else:
+                    self._timer.start()
+
+        def apply_zoom(self):
+            self.program["u_resolution"] = self.physical_size
+            gloo.set_viewport(0, 0, *self.physical_size)
+
+    c = Canvas()
+    app.run()
+
+def fluid():
+
+    #!/usr/bin/env python
+    from vispy import gloo, app, keys
+
+    VERT_SHADER = """
+    attribute vec2 a_position;
+    void main (void)
+    {
+        gl_Position = vec4(a_position, 0.0, 1.0);
+    }
+    """
+
+    FRAG_SHADER = """
+    uniform vec2 u_resolution;
+    uniform float u_global_time;
+
+    float random (in vec2 _st) {
+        return fract(sin(dot(_st.xy,
+                            vec2(12.9898,78.233)))*
+            43758.5453123);
+    }
+
+    // --- NOISE ---
+
+    float noise (in vec2 _st) {
+        vec2 i = floor(_st);
+        vec2 f = fract(_st);
+
+        // Four corners in 2D of a tile
+        float a = random(i);
+        float b = random(i + vec2(1.0, 0.0));
+        float c = random(i + vec2(0.0, 1.0));
+        float d = random(i + vec2(1.0, 1.0));
+
+        vec2 u = f * f * (3.0 - 2.0 * f);
+
+        return mix(a, b, u.x) +
+                (c - a)* u.y * (1.0 - u.x) +
+                (d - b) * u.x * u.y;
+    }
+
+    // --- SAMPLE ---
+    #define NUM_OCTAVES 5
+
+    float fbm ( in vec2 _st) {
+        float v = 0.0;
+        float a = 0.5;
+        vec2 shift = vec2(100.0);
+        // Rotate to reduce axial bias
+        mat2 rot = mat2(cos(0.5), sin(0.5),
+                        -sin(0.5), cos(0.50));
+        for (int i = 0; i < NUM_OCTAVES; ++i) {
+            v += a * noise(_st);
+            _st = rot * _st * 2.0 + shift;
+            a *= 0.5;
+        }
+        return v;
+    }
+
+    void main() {
+        vec2 st = gl_FragCoord.xy/u_resolution.xy*3.;
+        // st += st * abs(sin(u_global_time*0.1)*3.0);
+        vec3 color = vec3(0.0);
+
+        vec2 q = vec2(0.);
+        q.x = fbm( st + 0.00*u_global_time);
+        q.y = fbm( st + vec2(1.0));
+
+        vec2 r = vec2(0.);
+        r.x = fbm( st + 1.0*q + vec2(1.7,9.2)+ 0.15*u_global_time );
+        r.y = fbm( st + 1.0*q + vec2(8.3,2.8)+ 0.126*u_global_time);
+
+        float f = fbm(st+r);
+
+        color = mix(vec3(0.101961,0.619608,0.666667),
+                    vec3(0.666667,0.666667,0.498039),
+                    clamp((f*f)*4.0,0.0,1.0));
+
+        color = mix(color,
+                    vec3(0,0,0.164706),
+                    clamp(length(q),0.0,1.0));
+
+        color = mix(color,
+                    vec3(0.666667,1,1),
+                    clamp(length(r.x),0.0,1.0));
+
+        gl_FragColor = vec4((f*f*f+.6*f*f+.5*f)*color,1.);
+    }
+
+    """
+
+
+    class Canvas(app.Canvas):
+        def __init__(self):
+            app.Canvas.__init__(self, size=(800, 600), keys='interactive')
+            self.program = gloo.Program(VERT_SHADER, FRAG_SHADER)
+            self.program["u_global_time"] = 0
+            self.program['a_position'] = [(-1, -1), (-1, +1),
+                                        (+1, -1), (+1, +1)]
+
+            self.apply_zoom()
+
+            gloo.set_state(blend=True,
+                        blend_func=('src_alpha', 'one_minus_src_alpha'))
+
+            self._timer = app.Timer('auto', connect=self.on_timer_event,
+                                    start=True)
+
+            self.show()
 
         def on_resize(self, event):
-            gloo.set_viewport(0, 0, *event.physical_size)
+            self.apply_zoom()
+
+        def on_draw(self, event):
+            gloo.clear('white')
+            self.program.draw(mode='triangle_strip')
+
+        def on_timer_event(self, event):
+            if self._timer.running:
+                self.program["u_global_time"] += event.dt
+            self.update()
+
+        def on_key_press(self, event):
+            if event.key is keys.SPACE:
+                if self._timer.running:
+                    self._timer.stop()
+                else:
+                    self._timer.start()
+
+        def apply_zoom(self):
+            self.program["u_resolution"] = self.physical_size
+            gloo.set_viewport(0, 0, *self.physical_size)
 
     c = Canvas()
     app.run()

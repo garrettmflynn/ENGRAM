@@ -1,3 +1,0 @@
-.. admonition:: Diary Entry #1
-    
-    *How could it be so easy to distribute a package on PyPI?!*
