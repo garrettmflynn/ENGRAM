@@ -194,6 +194,14 @@ Experiment Plan for Thesis
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 **April 2020:** Get all data (LFP,spikes, each subject) into Engrams
 
+ .. warning: 
+
+    **Done. But you now have no unique data representation. What now?**
+
+.. admonition:: Task
+
+    Make model responsive to input shape
+
 **May 2020:** Compare rat LFP to human LFP (SnR)
 
     * Humans will have a smaller SnR
@@ -202,10 +210,17 @@ Experiment Plan for Thesis
 
     Automate testing (parameter optimization)
 
+    Combine regions
+
 **June 2020:** Single subject LFP classification models
 
     * Bspline input will perform best 
     * Deep learning models will perform better than GLM
+
+.. admonition:: Task
+
+    Switch from many binary classifiers to a mult-label classifier
+    
 
 **July 2020:** Single subject Spike classification models
 
@@ -221,10 +236,10 @@ Experiment Plan for Thesis
 
 
 
-.. jupyter-execute:: 
+.. .. jupyter-execute:: 
 
-    from engram.episodic import shaders
-    shaders.select('engram')
+..     from engram.episodic import shaders
+..     shaders.select('engram')
 
 
 

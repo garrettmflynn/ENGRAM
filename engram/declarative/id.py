@@ -12,6 +12,7 @@ from engram.declarative.engram import Engram
 from engram.declarative.mneme import Mneme
 from engram.procedural import events, data, features, filters, train
 import numpy as np
+from scipy.io import loadmat
 
 
 class ID(object):
@@ -28,7 +29,8 @@ class ID(object):
         self.project = project
         self.extension = extension
         self.date = datetime.datetime.now().strftime("%d-%m-%Y_%I-%M-%S_%p")
-        self.engrams = {}
+        self.trial_features = []
+        self.trial_labels = []
         self.traces = {}
         self.settings = settings
         self.regions = []
@@ -45,7 +47,7 @@ class ID(object):
         if session is None:
             session = "Trace" + str(len(self.traces))
         self.traces[session] = {'Data': [], 'fs': None,
-                                'units': None, 'regions': {}, 'events':{},'neurons':{}}
+                                'units': None, 'regions': {}, 'events':{},'spikes':[],'labels':{}}
 
         print('Loading new trace...')
 
@@ -83,101 +85,82 @@ class ID(object):
             if self.regions is None:
                 self.regions = np.empty()
             for region in regions:
-                np.append(self.regions, region)
+                self.regions = np.append(self.regions, region)
             self.regions = np.unique(self.regions)
 
     def loadEvents(self, session=None, extension='.nex'):
         if session is None:
             session = "Trace" + str(len(self.traces)-1)
+
+        # add events and spikes
         tracedir = 'raw'
-        filename = os.path.join(tracedir, f"{self.id}",
+        eventsname = os.path.join(tracedir, f"{self.id}",
                                           f"{self.id}{extension}")
-        reader = neo.get_io(filename=filename)
-        self.traces[session]['events'], self.traces[session]['neurons'] = events.select(self.project, reader)
+        reader = neo.get_io(filename=eventsname)
+        self.traces[session]['events'], spikes_ = events.select(self.project, reader)
 
-    def createEngrams(self, settings=None):
+        # add labels
+        labelsname = os.path.join(tracedir, f"{self.id}",
+                                              f"{self.id}_labels.mat")
+        labels = loadmat(labelsname)
+        keys_list = list(labels)
+        for key in keys_list:
+            if 'Label' in key:
+                name = key[6:]
+                self.traces[session]['labels'][name] =  np.squeeze(labels[key])
 
-        self.engrams = {}
-        self.mnemes = {}
+        # convert spikes to binary array + derive source channel
+        self.settings['spike_channels'] = []
+        for neuron in spikes_:
+            spikes = np.zeros(np.size(self.traces[session]['Data'],1))
+            rounded_indices = np.round(spikes_[neuron]*self.traces[session]['fs']).astype('int')
+            spikes[rounded_indices] = 1
+
+            self.traces[session]['spikes'].append(spikes)
+            self.settings['spike_channels'].append(neuron[3:6].lstrip('0'))
+
+        self.traces[session]['spikes'] = np.array(self.traces[session]['spikes']).T
+
+    def preprocess(self, settings=None):
+
+        # trials x sources x time x etc 
+        # note: all sources need their true corresponding address (for region specification)
+        trial_matrix = []
+        label_matrix = []
 
         for trace in self.traces:
 
             # Derive Features from Each Trace
             feature, self.settings['t_feat'], self.settings['f_feat'] = features.select(
                                             self.settings['feature'],
-                                            self.traces[trace]['Data'],
+                                            self.traces[trace],
                                             self.settings
                                             )
 
-            for event in self.traces[trace]['events']:
-                if event is not None and event != 'DIO_CHANGED':
-                    times = self.traces[trace]['events'][event]
-                    # engram = np.empty(len(times))
-                    engram = {}
+            times = self.traces[trace]['events'][self.settings['event_of_interest']]
 
-                    for trial, time in enumerate(times):
-                        engram[trial] = {}
+            for trial,time in enumerate(times):
+                # Select Proper Timebins from Features
+                if 'prev_len' in locals():
+                    featureset, prev_len = data.select(feature=feature,
+                                                        time=time, settings=self.settings,
+                                                        prev_len=prev_len)
+                else:
+                    featureset, prev_len = data.select(feature=feature,
+                                                        time=time, settings=self.settings)
+                trial_matrix.append(featureset)
+                print('Trial ' + str(trial) + ' finished.')
 
-                        for channel in range(len(self.traces[trace]['Data'])):
-
-                            # Select Proper Timebins from Features
-                            if 'prev_len' in locals():
-                                featureset, prev_len = data.select(feature=feature[channel],
-                                                                    time=time, settings=self.settings,
-                                                                    prev_len=prev_len)
-                            else:
-                                featureset, prev_len = data.select(feature=feature[channel],
-                                                                    time=time, settings=self.settings)
-
-                            # Check Region of Origin
-                            for region in self.traces[trace]['regions']:
-                                if (self.settings['all_channels'][channel] 
-                                in self.traces[trace]
-                                ['regions'][region]['channels']):
-
-                                    current_region = region
-
-                            channel_name = self.settings['all_channels'][channel]
-
-                            engram[trial][channel_name] = {}
-                            engram[trial]       \
-                                [channel_name]  \
-                                ['features'] = featureset
-
-                            engram[trial][channel_name] \
-                                ['region'] = current_region
-
-                    if event not in self.engrams:
-                        self.engrams[event] = None
-
-                    self.engrams[event] = Engram(engram, id=self.id, tag=event)
-
-            print('Engrams completed!')
+            if not self.trial_features:
+                self.trial_features = trial_matrix
+                self.trial_labels = self.traces[trace]['labels']
+            else:
+                self.trial_features.append(trial_matrix)
+                self.trial_labels.append(self.traces[trace]['labels'])
+        print('Engrams completed!')
 
     def model(self, method='channels', model_type='CNN'):
-        in_matrix = []
-        labels = []
-        for engram in self.engrams:
-            labels.append(self.engrams[engram].tag)
-            tri_matrix = []
-            if method == 'channels':
-                for trial in self.engrams[engram].trials:
-                    chan_matrix = []
-                    for channel in self.engrams[engram].trials[trial]:
-
-                        chan_matrix.append(
-                            self.engrams[engram].trials[trial]
-                            [channel]['features']
-                            )
-
-                    tri_matrix.append(chan_matrix)
-                in_matrix.append(tri_matrix)
-            elif method == 'regions':
-                print('Method currently in development.')
-            else:
-                print('Method not supported.')
-
-        train.train(model_type, in_matrix, labels)
+        train.train(model_type, self.trial_features, self.trial_labels)
 
     def save(self, datadir='users'):
         if not os.path.exists(datadir):

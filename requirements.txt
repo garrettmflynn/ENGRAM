@@ -1,5 +1,4 @@
 neo
 numpy
-pyqt5
 scipy
-vispy
+visbrain

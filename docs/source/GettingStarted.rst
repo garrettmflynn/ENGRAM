@@ -19,8 +19,7 @@ Requirements
 * Tensorflow (**must install manually**)
 * Numpy
 * Scipy
-* Vispy
-* PyQt5
+* Visbrain
 
 Key Features
 ---------------

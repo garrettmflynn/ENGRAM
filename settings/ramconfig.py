@@ -2,8 +2,9 @@
 settings = {
     'fs': 2000,
     'all_channels': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-    17, 18, 19, 20, 21, 22, 23, 24, 25, 26],
-    'feature': 'STFT',
+    17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
+    33, 34, 35, 36, 37, 38, 39, 40, 41, 42],
+    'feature': 'spikes',
     'bandpass_min': 1,
     'bandpass_max': 250,
     '2D_min': 0,
@@ -16,6 +17,7 @@ settings = {
     'log_transform': True,
     'roi':'events',
     'roi_bounds': (-1,1), # Two-second window centered at the event
+    'event_of_interest': 'SAMPLE_RESPONSE',
     'model': []
 }
 

@@ -28,7 +28,10 @@ def events(feature,time,settings,prev_len):
             else:
                 upper_index += diff_two
 
-    section = feature[lower_index:upper_index]
+    if np.ndim(feature) == 2:
+        section = feature[lower_index:upper_index,:]
+    elif np.ndim(feature) == 3:
+        section = feature[:,lower_index:upper_index,:]
     prev_len = upper_index-lower_index
     return section,prev_len
 

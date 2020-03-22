@@ -1,13 +1,14 @@
 
 import numpy as np 
 from engram.procedural import filters
-from engram.episodic.terminal import startProgress,progress,endProgress
 from scipy import signal
 
 def select(name,trace,settings):
     selection = {
         "LFP": LFP,
-        "STFT": STFT
+        "STFT": STFT,
+        "spikes": spikes,
+        "multiscale": multiscale
     }
     # Get the function from switcher dictionary
     func = selection.get(name, lambda: "Invalid event parser")
@@ -15,28 +16,37 @@ def select(name,trace,settings):
     return func(trace,settings)
 
 
+def multiscale(trace,settings):
+    power, t, f = STFT(trace,settings)
+    spikes,_,_ = spikes(trace,settings)
+    signals = np.concatenate(power,spikes)
+    
+    return signals, t, f
 
-def LFP(data,settings):
+def spikes(trace,settings):
+    spikes = trace['spikes']
+    t = np.arange(0,np.size(trace['Data'], 1))/settings['fs']
+    f = None
 
-    lfp = np.empty(data.shape)
-    if np.ndim(data) == 2:
-        startProgress('LFP Derivation')
-        for channel in range(np.size(data, 0)):
-            progress(channel/np.size(data, 0))
-            lfp[channel, :] = filters.select('bandpass',data[channel, :],min=settings['bandpass_min'],
+    return spikes, t,f
+
+def LFP(trace, settings):
+
+    lfp = np.empty(trace['Data'].shape)
+    if np.ndim(trace['Data']) == 2:
+        for channel in range(np.size(trace['Data'], 0)):
+            lfp[channel, :] = filters.select('bandpass',trace['Data'][channel, :],min=settings['bandpass_min'],
                                                 max=settings['bandpass_max'],
                                                 fs=settings['fs'],
                                                 order=5)
-        t = np.asarray(range(np.size(data, 1)))/settings['fs']
+        t = np.asarray(range(np.size(trace['Data'], 1)))/settings['fs']
 
-        endProgress()
-
-    elif np.ndim(data) == 1:
-        lfp = filters.select('bandpass',data,min=settings['bandpass_min'],
+    elif np.ndim(trace['Data']) == 1:
+        lfp = filters.select('bandpass',trace['Data'],min=settings['bandpass_min'],
                                                 max=settings['bandpass_max'],
                                                 fs=settings['fs'],
                                                 order=5)
-        t = range(np.size(data,1))/settings['fs']
+        t = range(np.size(trace['Data'],1))/settings['fs']
         
 
     else:
@@ -49,9 +59,9 @@ def LFP(data,settings):
 
 
 
-def STFT(data,settings):
+def STFT(trace,settings):
 
-    lfp,t,f = LFP(data,settings)
+    lfp,t,f = LFP(trace,settings)
 
     N = 1e5
     amp = 2 * np.sqrt(2)
@@ -68,9 +78,7 @@ def STFT(data,settings):
     c_len = lfp.shape[0]
 
     if np.ndim(lfp) == 2:
-        startProgress('STFT Derivation')
         for channel in range(len(lfp)):
-            progress(channel/len(lfp))
             temp_f, temp_t, temp_Zxx = signal.spectrogram(lfp[channel, :],
                                                             settings['fs'],
                                                             'hann', nperseg=window)
@@ -88,8 +96,6 @@ def STFT(data,settings):
             power[channel, :, :] = np.transpose(Zxx ** 2) # Channels x Time x Freq
             del Zxx
 
-        endProgress()
-    
     if np.ndim(lfp) == 1:
         temp_f, temp_t, temp_Zxx = signal.spectrogram(lfp,
                                                         settings['fs'],
@@ -119,11 +125,8 @@ def normalize(data,settings):
             freqMu = np.mean(data,axis=1)
             freqSig = np.std(data,axis=1)
 
-            startProgress('Normalization')
             for channel in range(len(data)):
-                progress(channel/len(data))
                 data[channel,:,:] = (data[channel] - freqMu[channel])/freqSig[channel]
-            endProgress()
         elif np.ndim(data) == 2 or 1:
             freqMu = np.mean(data,axis=0)
             freqSig = np.std(data,axis=0)
