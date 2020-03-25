@@ -11,4 +11,4 @@ from engram.episodic import shaders
 # sandbox 
 # oscilloscope
 
-shaders.select('engram')
+shaders.select('shadertoy')

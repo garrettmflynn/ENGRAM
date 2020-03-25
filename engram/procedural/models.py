@@ -53,7 +53,7 @@ def md(shape):
 
     model.compile(loss='categorical_crossentropy',
                 optimizer='adam',
-                metrics=['accuracy'])  
+                metrics=['MatthewsCorrelationCoefficient'])  
 
     return model
 
@@ -81,7 +81,7 @@ def cnn(shape):
 
     model.compile(loss='categorical_crossentropy',
                 optimizer='adam',
-                metrics=['accuracy'])  
+                metrics=['MatthewsCorrelationCoefficient'])  
 
     return model
 

@@ -24,6 +24,7 @@ def select(shader="atom", regions=None, data=None, assignments=None):
         "spectrogram" : spectrogram,
         "fluid" : fluid,
         "fun" : fun,
+        "shadertoy" : shadertoy,
     }
     
     # Get the function from switcher dictionary
@@ -298,6 +299,204 @@ def engram(regions,spikes,assignments):
     c = Canvas()
     app.run()
 
+def shadertoy():
+
+    import sys
+    from datetime import datetime, time
+    import numpy as np
+    from vispy import gloo
+    from vispy import app
+
+
+    vertex = """
+    #version 120
+
+    attribute vec2 position;
+    void main()
+    {
+        gl_Position = vec4(position, 0.0, 1.0);
+    }
+    """
+
+    fragment = """
+    #version 120
+
+    uniform vec3      iResolution;           // viewport resolution (in pixels)
+    uniform float     iGlobalTime;           // shader playback time (in seconds)
+    uniform vec4      iMouse;                // mouse pixel coords
+    uniform vec4      iDate;                 // (year, month, day, time in seconds)
+    uniform float     iSampleRate;           // sound sample rate (i.e., 44100)
+    uniform sampler2D iChannel0;             // input channel. XX = 2D/Cube
+    uniform sampler2D iChannel1;             // input channel. XX = 2D/Cube
+    uniform sampler2D iChannel2;             // input channel. XX = 2D/Cube
+    uniform sampler2D iChannel3;             // input channel. XX = 2D/Cube
+    uniform vec3      iChannelResolution[4]; // channel resolution (in pixels)
+    uniform float     iChannelTime[4];       // channel playback time (in sec)
+
+    %s
+    """
+
+
+    def get_idate():
+        now = datetime.now()
+        utcnow = datetime.utcnow()
+        midnight_utc = datetime.combine(utcnow.date(), time(0))
+        delta = utcnow - midnight_utc
+        return (now.year, now.month, now.day, delta.seconds)
+
+
+    def noise(resolution=64, nchannels=1):
+        # Random texture.
+        return np.random.randint(low=0, high=256,
+                                size=(resolution, resolution, nchannels)
+                                ).astype(np.uint8)
+
+
+    class Canvas(app.Canvas):
+
+        def __init__(self, shadertoy=None):
+            app.Canvas.__init__(self, keys='interactive')
+            if shadertoy is None:
+                shadertoy = """
+                void main(void)
+                {
+                    vec2 uv = gl_FragCoord.xy / iResolution.xy;
+                    gl_FragColor = vec4(uv,0.5+0.5*sin(iGlobalTime),1.0);
+                }"""
+            self.program = gloo.Program(vertex, fragment % shadertoy)
+
+            self.program["position"] = [(-1, -1), (-1, 1), (1, 1),
+                                        (-1, -1), (1, 1), (1, -1)]
+            self.program['iMouse'] = 0, 0, 0, 0
+
+            self.program['iSampleRate'] = 44100.
+            for i in range(4):
+                self.program['iChannelTime[%d]' % i] = 0.
+
+            self.activate_zoom()
+
+            self._timer = app.Timer('auto', connect=self.on_timer, start=True)
+
+            self.show()
+
+        def set_channel_input(self, img, i=0):
+            tex = gloo.Texture2D(img)
+            tex.interpolation = 'linear'
+            tex.wrapping = 'repeat'
+            self.program['iChannel%d' % i] = tex
+            self.program['iChannelResolution[%d]' % i] = img.shape
+
+        def on_draw(self, event):
+            self.program.draw()
+
+        def on_mouse_click(self, event):
+            # BUG: DOES NOT WORK YET, NO CLICK EVENT IN VISPY FOR NOW...
+            imouse = event.pos + event.pos
+            self.program['iMouse'] = imouse
+
+        def on_mouse_move(self, event):
+            if event.is_dragging:
+                x, y = event.pos
+                px, py = event.press_event.pos
+                imouse = (x, self.size[1] - y, px, self.size[1] - py)
+                self.program['iMouse'] = imouse
+
+        def on_timer(self, event):
+            self.program['iGlobalTime'] = event.elapsed
+            self.program['iDate'] = get_idate()  # used in some shadertoy exs
+            self.update()
+
+        def on_resize(self, event):
+            self.activate_zoom()
+
+        def activate_zoom(self):
+            gloo.set_viewport(0, 0, *self.physical_size)
+            self.program['iResolution'] = (self.physical_size[0],
+                                        self.physical_size[1], 0.)
+
+    # -------------------------------------------------------------------------
+    # COPY-PASTE SHADERTOY CODE BELOW
+    # -------------------------------------------------------------------------
+    SHADERTOY = """
+    // From: https://www.shadertoy.com/view/MdX3Rr
+
+    // "Vortex Street" by dr2 - 2015
+    // License: Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License
+
+    // Motivated by implementation of van Wijk's IBFV by eiffie (lllGDl) and andregc (4llGWl) 
+
+    const vec4 cHashA4 = vec4 (0., 1., 57., 58.);
+    const vec3 cHashA3 = vec3 (1., 57., 113.);
+    const float cHashM = 43758.54;
+
+    vec4 Hashv4f (float p)
+    {
+    return fract (sin (p + cHashA4) * cHashM);
+    }
+
+    float Noisefv2 (vec2 p)
+    {
+    vec2 i = floor (p);
+    vec2 f = fract (p);
+    f = f * f * (3. - 2. * f);
+    vec4 t = Hashv4f (dot (i, cHashA3.xy));
+    return mix (mix (t.x, t.y, f.x), mix (t.z, t.w, f.x), f.y);
+    }
+
+    float Fbm2 (vec2 p)
+    {
+    float s = 0.;
+    float a = 1.;
+    for (int i = 0; i < 6; i ++) {
+        s += a * Noisefv2 (p);
+        a *= 0.5;
+        p *= 2.;
+    }
+    return s;
+    }
+
+    float tCur;
+
+    vec2 VortF (vec2 q, vec2 c)
+    {
+    vec2 d = q - c;
+    return 0.25 * vec2 (d.y, - d.x) / (dot (d, d) + 0.05);
+    }
+
+    vec2 FlowField (vec2 q)
+    {
+    vec2 vr, c;
+    float dir = 1.;
+    c = vec2 (mod (tCur, 10.) - 20., 0.6 * dir);
+    vr = vec2 (0.);
+    for (int k = 0; k < 30; k ++) {
+        vr += dir * VortF (4. * q, c);
+        c = vec2 (c.x + 1., - c.y);
+        dir = - dir;
+    }
+    return vr;
+    }
+
+    void main(void)
+    {
+    vec2 uv = gl_FragCoord.xy / iResolution.xy - 0.5;
+    uv.x *= iResolution.x / iResolution.y;
+    tCur = iGlobalTime;
+    vec2 p = uv;
+    for (int i = 0; i < 10; i ++) p -= FlowField (p) * 0.03;
+    vec3 col = Fbm2 (5. * p + vec2 (-0.1 * tCur, 0.)) *
+        vec3 (0.5, 0.5, 1.);
+    gl_FragColor = vec4 (col, 1.);
+    }
+
+    """
+    # -------------------------------------------------------------------------
+
+    canvas = Canvas(SHADERTOY)
+    # Input data.
+    canvas.set_channel_input(noise(resolution=256, nchannels=1), i=0)
+    canvas.show()
+    canvas.app.run()
 
 def fun():
     # vispy: gallery 30

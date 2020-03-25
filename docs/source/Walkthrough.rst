@@ -1,82 +1,103 @@
 .. _Walkthrough:
 
 ================================================
-A Gentle Introduction to Neural Engineering
+A Gentle Introduction to Neural Prostheses
 ================================================
 
-:ref:`HMP_Intro` 
-    This section will acquaint readers with the Law of Engraphy--both in its historical and present forms--
-    while situating this theory into what ENGRAM means by 
-    "encoding", "graphical representations", and "activated memories".
+:ref:`Intro` 
+    This section will acquaint readers with concrete use cases 
+    of neural prostheses.
 
-:ref:`HMP_History` 
-    This section will provide some background on cortical prostheses.
-:ref:`HMP_Prosthesis` 
+:ref:`ENGRAM` 
+    This section will detail the background and features of ENGRAM.
+
+:ref:`HMP` 
     This section is an extensive walkthrough of how to build a memory prosthesis:
     a specific application of cortical prostheses.
 
-:ref:`HMP_Conclusion` 
+:ref:`Conclusion` 
     This section will synthesize what we've learned into projections for the
     future of neural engineering.
 
-:ref:`HMP_Resources`
+:ref:`Resources`
     This section gives additional resources for the curious to explore.
 
 
 
-.. _HMP_Intro:
+.. _Intro:
 
-Introduction to Engrams
------------------------
+Introduction
+----------------------------------------
 
-**Entry Vignette** to provide the reader with an inviting Introduction
+Entry Vignette 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+To provide the reader with an inviting Introduction
 to the feel of the context in which the case takes place
 
-**An Introduction** to familiarize the reader with the central features
+.. note::
+    **Dementia neurologist (cases, tools, ethics)**
+    
+    - Narrative flow from the perspective of the user
+
+
+    **Aside showing my own growth**
+
+    - Impetus: Neuromancer. To walk upon an electronic ground.
+    - Ungeneralized Idea: Cognitive states (epi./phen.) are upheld by multiscale neural activity
+    - Generalized Idea: Time and space change, but the ground retains memory.
+
+
+An Introduction
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+To familiarize the reader with the central features
 including rationale and research procedures
 
-**An Extensive Narrative Description** to of the case(s) and its context,
+An Extensive Narrative Description
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+To of the case(s) and its context,
 which may involve historical or organizational information important for understanding the case
 
-**Draw from Additional Data Sources** and integrate with the researcher's own interpretations
+**The Computational Basis of Memory Encoding**
+Engrams are memory codes stored *someplace else* than the hippocampus.
+
+Draw from Additional Data Sources
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Integrate with the researcher's own interpretations
 of the issues and both confirming and disproving evidence are presented followed by the
 presentation of the overall case assertions
 
-**A Closing Vignette** as a way of cautoning the reader to the specific case context
+A Closing Vignette
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+As a way of cautoning the reader to the specific case context
 saying "I like to close on an experiential note, reminding the reader that this report
 is just one person's encounter with a complex case"
 
-The Computational Basis of Memory Encoding
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Engrams are memory codes stored *someplace else* than the hippocampus.
+.. _ENGRAM:
 
-Graphical Representations
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-
-Activated Memories
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. _HMP_History:
-
-A Brief History
+ENGRAM: The Tool
 ---------------------------------------------------------
 
 
-.. _HMP_Origins:
 
-Visions
+
+.. _ENGRAM_Definitions:
+
+Definitions
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+**Graphical Representations**
+
+**Activated Memories**
+
+.. _ENGRAM_Origins:
+
+Origins and Early Visions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Theodore Berger
 *********************************************
-
-Ed Boyden
-*********************************************
-
-Rajesh Rao
-*********************************************
+**CNE**
+From rats to primates to humans
 
 **What is a Cortical Prosthesis? The General Architecture**
 Replacement parts for the brain must be
@@ -94,33 +115,69 @@ Song had the math
 
 You must outline the end-user
 
-.. _HMP_CNE:
 
-USC Center for Neural Engineering
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-**From rats to primates to humans**
-
+Ed Boyden
+*********************************************
+**Neural Coprocessors**
 
 
-.. _HMP_MIMO:
-
-Hippocampal Dynamics: The Multi-Input Multi-Output (MIMO) Model
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-*Coming soon...*
+Rajesh Rao
+*********************************************
+**BTBI**
 
 
-.. _HMP_MD:
 
-Contents of Consciousness: The Memory Decoding (MD) Model
+.. _ENGRAM_Features:
+
+Core Features
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-*Coming soon...*
+.. _ENGRAM_Containers:
 
+Data Containers
+*****************************************************************
+    
+**ID:** All data from a single individual   
+- **Bin:** Binary data
+- **Cont:** Continuous data
+- **Events:** Event data
 
-.. _HMP_CL:
+Signal Comparison Module
+*****************************************************************
+    
+**For use comparing (1) within individuals (i.e. between channels)** 
+**or between multiple individuals**
+- Rats vs humans signal quality
 
-Putting Things Together: A Closed-Loop System
+.. _ENGRAM_Modeling:
+
+Mathematical Modeling Techniques
+*****************************************************************
+
+**Minimal Dependencies**
+- Classic Multi-Input Multi-Output (MIMO) Modeling
+- Classic Memory Decoding (An L1-regularized logistic regression model)
+- Closed Loop Hippocampal Prosthesis
+
+.. _ENGRAM_Integrations:
+
+Integration with Other Software Packages
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+**Tensorflow**
+- Deep MIMO and MD Models
+
+**Vispy/Visbrain**
+- Novel visualization techniques
+
+**Brainflow**
+- Online analysis of OpenBCI streams
+
+**ROOTS**
+- Realistic neural growth between functionally connected sources
+
+.. _ENGRAM_Ethics:
+
+Ethical Considerations
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 *Coming soon...*
@@ -185,56 +242,11 @@ Putting Things Together: A Closed-Loop System
  
 
 
-.. _HMP_Prosthesis:
+.. _HMP:
 
 How to Build a Memory Prosthesis
 ----------------------------------------
-
-Experiment Plan for Thesis
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
-**April 2020:** Get all data (LFP,spikes, each subject) into Engrams
-
- .. warning: 
-
-    **Done. But you now have no unique data representation. What now?**
-
-.. admonition:: Task
-
-    Make model responsive to input shape
-
-**May 2020:** Compare rat LFP to human LFP (SnR)
-
-    * Humans will have a smaller SnR
-
-.. admonition:: Task
-
-    Automate testing (parameter optimization)
-
-    Combine regions
-
-**June 2020:** Single subject LFP classification models
-
-    * Bspline input will perform best 
-    * Deep learning models will perform better than GLM
-
-.. admonition:: Task
-
-    Switch from many binary classifiers to a mult-label classifier
-    
-
-**July 2020:** Single subject Spike classification models
-
-**August 2020:** Single subject Multiscale classification models
-
-    * Expect best classification accuracy
-    * Can also try identifying recall using the same engram
-
-**December 2020:** Multi subject models
-
-    * Expect reduction in classification accuracy, but still significant.
-
-
-
+*Coming soon...*
 
 .. .. jupyter-execute:: 
 
@@ -243,17 +255,16 @@ Experiment Plan for Thesis
 
 
 
-.. _HMP_Conclusion:
+.. _Conclusion:
 
 Conclusion
 -----------------------------------------------------------------
-*Coming soon...*
 
 A New Era of Open-Source Neuroscience
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+*Coming soon...*
 
-
-.. _HMP_Resources:
+.. _Resources:
 
 Additional Resources
 ---------------------------
@@ -315,13 +326,12 @@ References
 
 .. bibliography:: references.bib
 
+
+.. Developer Information
+
 .. _Restoring Active Memory (RAM) program:  https://www.darpa.mil/program/restoring-active-memory
 
-
-
-
-
-
+.. Examples of Open Source Tools
 
 .. _Ephyviewer:     https://github.com/NeuralEnsemble/ephyviewer
 .. _EEGLearn:       https://github.com/pbashivan
@@ -329,4 +339,7 @@ References
 .. _Neurotic:       https://github.com/jpgill86/neurotic
 .. _Elephant:       https://elephant.readthedocs.io/en/latest/
 .. _Neo:            https://github.com/NeuralEnsemble/python-neo
+
+.. Visualizations in Neuroscience
+
 .. _CLARITY: https://www.gnu.org/licenses/gpl-3.0https://www.youtube.com/watch?v=c-NMfp13Uug

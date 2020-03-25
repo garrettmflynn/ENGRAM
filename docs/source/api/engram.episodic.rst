@@ -28,14 +28,6 @@ engram.episodic.shaders module
    :undoc-members:
    :show-inheritance:
 
-engram.episodic.shadertoy\-template module
-------------------------------------------
-
-.. automodule:: engram.episodic.shadertoy-template
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 engram.episodic.terminal module
 -------------------------------
 
