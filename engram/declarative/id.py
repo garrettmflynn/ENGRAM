@@ -11,6 +11,7 @@ from engram.procedural.neo_handler import unpackNeo
 from engram.declarative.engram import Engram
 from engram.declarative.mneme import Mneme
 from engram.procedural import events, data, features, filters, train
+from engram.episodic import shaders
 import numpy as np
 from scipy.io import loadmat
 
@@ -117,7 +118,7 @@ class ID(object):
             spikes[rounded_indices] = 1
 
             self.traces[session]['spikes'].append(spikes)
-            self.settings['spike_channels'].append(neuron[3:6].lstrip('0'))
+            self.settings['spike_channels'].append(int(neuron[3:6].lstrip('0')))
 
         self.traces[session]['spikes'] = np.array(self.traces[session]['spikes']).T
 
@@ -176,3 +177,10 @@ class ID(object):
         print(loadedID.id + " loaded!")
 
         return loadedID
+
+    def episode(self, shader='engram'):
+        regions = self.traces['Trace0']['regions']
+        data = self.traces['Trace0']['spikes']
+        assignments = self.settings['spike_channels']
+        shaders.select(shader=shader,regions=regions,
+                        data=data,assignments=assignments)

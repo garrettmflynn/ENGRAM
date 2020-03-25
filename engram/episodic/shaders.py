@@ -8,176 +8,478 @@ import vispy
 
 
 
-def select(name,data=None,settings=None):
+def select(shader="atom", regions=None, data=None, assignments=None):
     selection = {
-        "galaxy": galaxy,
-        "fireworks": fireworks,
-        "boids": boids,
+        "galaxy" : galaxy,
+        "fireworks" : fireworks,
+        "boids" : boids,
         "realtimesignals" : realtimesignals,
-        "brain":brain,
-        "sandbox":sandbox,
-        "graphical":graph,
-        "interactiveqt":interact,
-        "atom":atom,
-        "oscilloscope":oscilloscope,
-        "engram":engram,
-        "spectrogram":spectrogram,
-        "fluid":fluid,
+        "brain" : brain,
+        "sandbox" : sandbox,
+        "graphical" : graph,
+        "interactiveqt" : interact,
+        "atom" : atom,
+        "oscilloscope" : oscilloscope,
+        "engram" : engram,
+        "spectrogram" : spectrogram,
+        "fluid" : fluid,
+        "fun" : fun,
     }
     
     # Get the function from switcher dictionary
-    func = selection.get(name, lambda: "Invalid event parser")
+    func = selection.get(shader, lambda: "Invalid event parser")
     # Execute the function
-    if name != 'engram' or name != 'spectrogram':
+    if shader != 'engram':
         return func()
     else:
-        return func(data,settings)
+        return func(regions,data,assignments)
 
-def engram():
+def engram(regions,spikes,assignments):
 
-    #!/usr/bin/env python
-    # -*- coding: utf-8 -*-
-    # vispy: gallery 20
-    # -----------------------------------------------------------------------------
-    # Copyright (c) 2014, Nicolas P. Rougier, Guillaume Bâty. All Rights Reserved.
-    # Distributed under the (new) BSD License.
-    # -----------------------------------------------------------------------------
-    # High frequency (below pixel resolution) function plot
-    #
-    #  -> http://blog.hvidtfeldts.net/index.php/2011/07/plotting-high-frequency-fun
-    #     ctions-using-a-gpu/
-    #  -> https://www.shadertoy.com/view/4sB3zz
-    # -----------------------------------------------------------------------------
-    from vispy import gloo, app, keys
+    import numpy as np
+    from vispy import app, gloo, visuals
+    from vispy.util.transforms import perspective, translate, rotate
+    import math
 
-    VERT_SHADER = """
-    attribute vec2 a_position;
-    void main (void)
+    X = []
+    Y = []
+    Z = []
+    chans = {}
+    n_regions = {}
+    temp_n_regions = {}
+    n_tot = 0
+
+    SPACING = 1 # In MNI coordinates
+
+    for region in regions:
+        n_regions[region] = 0
+        temp_n_regions[region] = 0
+        for i in range(len(regions[region]['channels'])):
+            chans[regions[region]['channels'][i]] = region
+
+
+    for chan in assignments:
+        n_regions[chans[chan]] += 1
+        n_tot += 1
+
+    for chan in assignments:
+        region = chans[chan]
+        side = math.ceil((n_regions[region])**(1./3.))
+        x_off = SPACING * (((temp_n_regions[region]%(side**2))//side) - (side-1)/2)
+        y_off = SPACING * ((temp_n_regions[region]%side) - (side-1)/2)
+        z_off = SPACING * ((temp_n_regions[region]//(side**2)) - (side-1)/2)
+        X.append(regions[region]['positions'][0] + x_off)
+        Y.append(regions[region]['positions'][1] + y_off)
+        Z.append(regions[region]['positions'][2] + z_off)
+        temp_n_regions[region] += 1
+
+    print('Regions: ' + str(n_tot))
+    X = 6*((np.asarray(X) - min(X))/(max(X)-min(X)) - .5)
+    Y = 6*((np.asarray(Y) - min(Y))/(max(Y)-min(Y)) - .5)
+    Z = 6*((np.asarray(Z) - min(Z))/(max(Z)-min(Z)) - .5)
+
+    # Create vertices (all points in the atom)
+    xyzs = np.zeros((n_tot,4)).astype('float32')
+    data = np.zeros(n_tot, [('a_color', np.float32, 4),
+                        ('a_rotation', np.float32, 4)])
+
+    xyzs[:, 0] = X
+    xyzs[:, 1] = Y
+    xyzs[:, 2] = Z
+
+    # Convert binary array into visualizable continuous values
+    TRAIL = 50
+    spikes= spikes[0:1000000]
+    one_array = np.where(spikes == 1)
+    if not not one_array:
+        lb_1 = one_array[0]-TRAIL
+        ub_1 = one_array[0]
+        lb_2 = one_array[0]
+        ub_2 = one_array[0]+TRAIL
+        for ii in range(len(lb_1)):
+            if ub_2[ii] > len(spikes):
+                ub_2[ii] = len(spikes)
+            if lb_1[ii] < 0:
+                lb_1[ii] = 0
+                    
+            spikes[lb_1[ii]:ub_1[ii],one_array[1][ii]] += np.linspace(0,1,ub_1[ii]-lb_1[ii])
+            spikes[lb_2[ii]:ub_2[ii],one_array[1][ii]] += np.linspace(1,0,ub_2[ii]-lb_2[ii])
+
+
+    data['a_color'][:, 0] = np.ones(n_tot) * 76/255
+    data['a_color'][:, 1] = np.ones(n_tot) * 247/255
+    data['a_color'][:, 2] = np.ones(n_tot) * 219/255
+    data['a_color'][:, 3] = np.ones(n_tot) # Opacity 
+
+    data['a_rotation'] = np.repeat(
+        np.random.uniform(0, .1, (n_tot, 4)).astype(np.float32), 1, axis=0)
+
+
+    vert = """
+    #version 120
+    uniform mat4 u_model;
+    uniform mat4 u_view;
+    uniform mat4 u_projection;
+    uniform float u_size;
+    uniform float u_frame;
+
+    attribute vec4 a_xyzs;
+    attribute vec4 a_color;
+    attribute vec4 a_rotation;
+    varying vec4 v_color;
+
+    mat4 build_rotation(vec3 axis, float angle)
     {
-        gl_Position = vec4(a_position, 0.0, 1.0);
+        axis = normalize(axis);
+        float s = sin(angle);
+        float c = cos(angle);
+        float oc = 1.0 - c;
+        return mat4(oc * axis.x * axis.x + c,
+                    oc * axis.x * axis.y - axis.z * s,
+                    oc * axis.z * axis.x + axis.y * s,
+                    0.0,
+                    oc * axis.x * axis.y + axis.z * s,
+                    oc * axis.y * axis.y + c,
+                    oc * axis.y * axis.z - axis.x * s,
+                    0.0,
+                    oc * axis.z * axis.x - axis.y * s,
+                    oc * axis.y * axis.z + axis.x * s,
+                    oc * axis.z * axis.z + c,
+                    0.0,
+                    0.0, 0.0, 0.0, 1.0);
+    }
+
+
+    void main (void) {
+
+        float x_off = sin(u_frame + a_xyzs.y) * .1;
+        float y_off = sin(u_frame + a_xyzs.x) * .3;
+
+        float x1 = a_xyzs.x;
+        float y1 = a_xyzs.y;
+        float z1 = a_xyzs.z;
+
+        vec2 xy = vec2(x1,y1);
+
+        mat4 R = build_rotation(a_rotation.xyz, a_rotation.w);
+        gl_Position = u_projection * u_view * u_model * vec4(xy,z1,1);
+
+
+        #define SPIKE_MULT 5
+
+        gl_PointSize = u_size*5 + (u_size*SPIKE_MULT*a_xyzs.w);
+
+        float hue = x1;
+        float sat = y1;
+        float val = sin(a_xyzs.y*a_xyzs.y);
+
+        v_color = a_color;
+        v_color.r = a_xyzs.w;
     }
     """
 
-    FRAG_SHADER = """
-    uniform vec2 u_resolution;
-    uniform float u_global_time;
-
-    float random (in vec2 _st) {
-        return fract(sin(dot(_st.xy,
-                            vec2(12.9898,78.233)))*
-            43758.5453123);
+    frag = """
+    #version 120
+    varying vec4 v_color;
+    varying float v_size;
+    void main()
+    {
+        // Point shaping function
+        float d = 2*(length(gl_PointCoord.xy - vec2(0.5,0.5)));
+        gl_FragColor = vec4(v_color.rgb, v_color.a*(1-d));
     }
-
-    // --- NOISE ---
-
-    float noise (in vec2 _st) {
-        vec2 i = floor(_st);
-        vec2 f = fract(_st);
-
-        // Four corners in 2D of a tile
-        float a = random(i);
-        float b = random(i + vec2(1.0, 0.0));
-        float c = random(i + vec2(0.0, 1.0));
-        float d = random(i + vec2(1.0, 1.0));
-
-        vec2 u = f * f * (3.0 - 2.0 * f);
-
-        return mix(a, b, u.x) +
-                (c - a)* u.y * (1.0 - u.x) +
-                (d - b) * u.x * u.y;
-    }
-
-    // --- SAMPLE ---
-    #define NUM_OCTAVES 5
-
-    float fbm ( in vec2 _st) {
-        float v = 0.0;
-        float a = 0.5;
-        vec2 shift = vec2(100.0);
-        // Rotate to reduce axial bias
-        mat2 rot = mat2(cos(0.5), sin(0.5),
-                        -sin(0.5), cos(0.50));
-        for (int i = 0; i < NUM_OCTAVES; ++i) {
-            v += a * noise(_st);
-            _st = rot * _st * 2.0 + shift;
-            a *= 0.5;
-        }
-        return v;
-    }
-
-    void main() {
-        vec2 st = gl_FragCoord.xy/u_resolution.xy*3.;
-        // st += st * abs(sin(u_global_time*0.1)*3.0);
-        vec3 color = vec3(0.0);
-
-        vec2 q = vec2(0.);
-        q.x = fbm( st + 0.00*u_global_time);
-        q.y = fbm( st + vec2(1.0));
-
-        vec2 r = vec2(0.);
-        r.x = fbm( st + 1.0*q + vec2(1.7,9.2)+ 0.15*u_global_time );
-        r.y = fbm( st + 1.0*q + vec2(8.3,2.8)+ 0.126*u_global_time);
-
-        float f = fbm(st+r);
-
-        color = mix(vec3(0.101961,0.619608,0.666667),
-                    vec3(0.666667,0.666667,0.498039),
-                    clamp((f*f)*4.0,0.0,1.0));
-
-        color = mix(color,
-                    vec3(0,0,0.164706),
-                    clamp(length(q),0.0,1.0));
-
-        color = mix(color,
-                    vec3(0.666667,1,1),
-                    clamp(length(r.x),0.0,1.0));
-
-        gl_FragColor = vec4((f*f*f+.6*f*f+.5*f)*color,1.);
-    }
-
     """
 
 
+    # ------------------------------------------------------------ Canvas class ---
     class Canvas(app.Canvas):
+
         def __init__(self):
-            app.Canvas.__init__(self, size=(800, 600), keys='interactive')
-            self.program = gloo.Program(VERT_SHADER, FRAG_SHADER)
-            self.program["u_global_time"] = 0
-            self.program['a_position'] = [(-1, -1), (-1, +1),
-                                        (+1, -1), (+1, +1)]
+            app.Canvas.__init__(self, keys='interactive', size=(800, 800))
+
+            self.translate = 10 # Z Start Location
+            self.program = gloo.Program(vert, frag)
+            self.view = translate((0, 0, -self.translate))
+            self.model = np.eye(4, dtype=np.float32)
+            self.projection = np.eye(4, dtype=np.float32)
+
+             # t1 = np.array(X.shape[0])
+            # for ind, val in enumerate(X):
+            #     t1[ind] = Text('Text in root scene (24 pt)', parent=c.scene, color='red')
+            #     t1[ind].font_size = 24
+            #     t1[ind] = pos = val, Y[ind], Z[ind]
+
+            self.font_size = self.physical_size[1]/24
+            self.text_pos = self.physical_size[0]/2, 5*self.physical_size[1]/6
+            self.text = visuals.TextVisual(' ', bold=True)
+            self.text.color = 'white'
 
             self.apply_zoom()
 
-            gloo.set_state(blend=True,
-                        blend_func=('src_alpha', 'one_minus_src_alpha'))
+            self.program.bind(gloo.VertexBuffer(data))
+            self.program['u_model'] = self.model
+            self.program['u_view'] = self.view
+            self.program['u_size'] = 50/(self.translate)
 
-            self._timer = app.Timer('auto', connect=self.on_timer_event,
-                                    start=True)
+            self.theta = 0
+            self.phi = 0
+            self.frame = 0
+            self.stop_rotation = False
+
+            gloo.set_state('translucent', depth_test=False)
+
+            self.program['u_frame'] = 0.0
+            xyzs[:, 3] = spikes[int(self.program['u_frame'][0])]
+            self.program['a_xyzs'] = xyzs
+
+            self._timer = app.Timer('auto', connect=self.on_timer, start=True)
 
             self.show()
+
+        def on_key_press(self, event):
+            if event.text == ' ':
+                self.stop_rotation = not self.stop_rotation
+
+        def on_timer(self, event):
+            if not self.stop_rotation:
+                self.theta += .5
+                self.phi += .5
+                self.model = np.dot(rotate(self.theta, (0, 0, 1)),
+                                    rotate(self.phi, (0, 1, 0)))
+                self.program['u_model'] = self.model
+            self.frame += 2000/60
+            if self.frame > len(spikes):
+                self.frame = 0
+            else:
+                self.program['u_frame'] = self.frame
+            
+            self.text.text = 't = ' + str(self.frame//2000) + ' s'
+
+            xyzs[:, 3] = spikes[int(self.program['u_frame'][0])]
+            self.program['a_xyzs'] = xyzs
+            self.update()
+
+        def on_resize(self, event):
+            self.apply_zoom()
+            self.update_text()
+
+
+        def on_mouse_wheel(self, event):
+            self.translate += event.delta[1]
+            self.translate = max(2, self.translate)
+            self.view = translate((0, 0, -self.translate))
+            self.program['u_view'] = self.view
+            self.program['u_size'] = 50/( self.translate )
+            self.update()
+            self.update_text()
+
+
+        def on_draw(self, event):
+            gloo.clear('black')
+            # gloo.clear(color='white')
+            self.program.draw('points')
+            self.text.draw()
+
+        def apply_zoom(self):
+            width, height = self.physical_size
+            vp = (0, 0, width, height)
+            gloo.set_viewport(vp)
+            self.projection = perspective(45.0, width / float(height), 1.0, 1000.0)
+            self.program['u_projection'] = self.projection
+            self.text.transforms.configure(canvas=self, viewport=vp)
+
+        def update_text(self):
+            self.text.font_size = self.font_size
+            self.text.pos = self.text_pos
+
+            self.update()
+
+
+    c = Canvas()
+    app.run()
+
+
+def fun():
+    # vispy: gallery 30
+    # -----------------------------------------------------------------------------
+    # Copyright (c) Vispy Development Team. All Rights Reserved.
+    # Distributed under the (new) BSD License. See LICENSE.txt for more info.
+    # -----------------------------------------------------------------------------
+    # Author: Nicolas P .Rougier
+    # Date:   06/03/2014
+    # Abstract: Fake electrons orbiting
+    # Keywords: Sprites, atom, particles
+    # -----------------------------------------------------------------------------
+
+    import numpy as np
+    from vispy import gloo
+    from vispy import app
+    from vispy.util.transforms import perspective, translate, rotate
+
+    # Create vertices (all points in the atom)
+    x_n = 10
+    y_n = 10
+    z_n = 10
+    x = np.linspace(-1, 1, x_n)
+    y = np.linspace(-1, 1, y_n)
+    z = np.linspace(-1, 1, z_n)
+    X, Y, Z = np.meshgrid(x, y, z, indexing='xy')
+
+    data = np.zeros(x_n*y_n*z_n, [('a_position', np.float32, 3),
+                        ('a_color',    np.float32, 4),
+                        ('a_rotation', np.float32, 4)])
+
+    data['a_position'][:, 0] =  X.flatten()
+    data['a_position'][:, 1] = Y.flatten()
+    data['a_position'][:, 2] = Z.flatten()
+
+    data['a_color'] = np.tile(np.array([1, 0, 0, 1]), (x_n*y_n*z_n,1)).astype(np.float32) # Color Range
+    data['a_color'][:, 3] = np.ones( x_n*y_n*z_n) # Opacity 
+
+    data['a_rotation'] = np.repeat(
+        np.random.uniform(0, .1, (x_n*y_n*z_n, 4)).astype(np.float32), 1, axis=0)
+
+
+    vert = """
+    #version 120
+    uniform mat4 u_model;
+    uniform mat4 u_view;
+    uniform mat4 u_projection;
+    uniform float u_size;
+    uniform float u_clock;
+
+    attribute vec3 a_position;
+    attribute vec4 a_color;
+    attribute vec4 a_rotation;
+    varying vec4 v_color;
+
+    mat4 build_rotation(vec3 axis, float angle)
+    {
+        axis = normalize(axis);
+        float s = sin(angle);
+        float c = cos(angle);
+        float oc = 1.0 - c;
+        return mat4(oc * axis.x * axis.x + c,
+                    oc * axis.x * axis.y - axis.z * s,
+                    oc * axis.z * axis.x + axis.y * s,
+                    0.0,
+                    oc * axis.x * axis.y + axis.z * s,
+                    oc * axis.y * axis.y + c,
+                    oc * axis.y * axis.z - axis.x * s,
+                    0.0,
+                    oc * axis.z * axis.x - axis.y * s,
+                    oc * axis.y * axis.z + axis.x * s,
+                    oc * axis.z * axis.z + c,
+                    0.0,
+                    0.0, 0.0, 0.0, 1.0);
+    }
+
+
+    void main (void) {
+        // v_color = a_color;
+
+        float x0 = 1.5;
+        float z0 = 0;
+
+        float x_off = sin(u_clock + a_position.y) * .1;
+        float y_off = sin(u_clock + a_position.x) * .3;
+
+        float x1 = a_position.x + x_off;
+        float y1 = a_position.y + y_off;
+        float z1 = a_position.z;
+
+        vec2 xy = vec2(x1,y1);
+
+        mat4 R = build_rotation(a_rotation.xyz, a_rotation.w);
+        gl_Position = u_projection * u_view * u_model * R * vec4(xy,z1,1);
+        gl_PointSize = u_size + sin(u_clock + a_position.x * a_position.y)*5;
+
+        float hue = x1;
+        float sat = y1;
+        float val = sin(a_position.y*a_position.y);
+
+        v_color = vec4(vec3(hue,sat,val),1);
+    }
+    """
+
+    frag = """
+    #version 120
+    varying vec4 v_color;
+    varying float v_size;
+    void main()
+    {
+        float d = 2*(length(gl_PointCoord.xy - vec2(0.5,0.5)));
+        gl_FragColor = vec4(v_color.rgb, v_color.a*(1-d));
+    }
+    """
+
+
+    # ------------------------------------------------------------ Canvas class ---
+    class Canvas(app.Canvas):
+
+        def __init__(self):
+            app.Canvas.__init__(self, keys='interactive', size=(800, 800))
+
+            self.translate = 6.5 # Z Start Location
+            self.program = gloo.Program(vert, frag)
+            self.view = translate((0, 0, -self.translate))
+            self.model = np.eye(4, dtype=np.float32)
+            self.projection = np.eye(4, dtype=np.float32)
+            self.apply_zoom()
+
+            self.program.bind(gloo.VertexBuffer(data))
+            self.program['u_model'] = self.model
+            self.program['u_view'] = self.view
+            self.program['u_size'] = 50/(self.translate)
+
+            self.theta = 0
+            self.phi = 0
+            self.clock = 0
+            self.stop_rotation = False
+
+            gloo.set_state('translucent', depth_test=False)
+            self.program['u_clock'] = 0.0
+
+            self._timer = app.Timer('auto', connect=self.on_timer, start=True)
+
+            self.show()
+
+        def on_key_press(self, event):
+            if event.text == ' ':
+                self.stop_rotation = not self.stop_rotation
+
+        def on_timer(self, event):
+            if not self.stop_rotation:
+                self.theta += .05
+                self.phi += .05
+                self.model = np.dot(rotate(self.theta, (0, 0, 1)),
+                                    rotate(self.phi, (0, 1, 0)))
+                self.program['u_model'] = self.model
+            self.clock += np.pi / 100
+            self.program['u_clock'] = self.clock
+            self.update()
 
         def on_resize(self, event):
             self.apply_zoom()
 
-        def on_draw(self, event):
-            gloo.clear('white')
-            self.program.draw(mode='triangle_strip')
-
-        def on_timer_event(self, event):
-            if self._timer.running:
-                self.program["u_global_time"] += event.dt
+        def on_mouse_wheel(self, event):
+            self.translate += event.delta[1]
+            self.translate = max(2, self.translate)
+            self.view = translate((0, 0, -self.translate))
+            self.program['u_view'] = self.view
+            self.program['u_size'] = 50/( self.translate )
             self.update()
 
-        def on_key_press(self, event):
-            if event.key is keys.SPACE:
-                if self._timer.running:
-                    self._timer.stop()
-                else:
-                    self._timer.start()
+        def on_draw(self, event):
+            gloo.clear('black')
+            self.program.draw('points')
 
         def apply_zoom(self):
-            self.program["u_resolution"] = self.physical_size
-            gloo.set_viewport(0, 0, *self.physical_size)
+            width, height = self.physical_size
+            gloo.set_viewport(0, 0, width, height)
+            self.projection = perspective(45.0, width / float(height), 1.0, 1000.0)
+            self.program['u_projection'] = self.projection
+
 
     c = Canvas()
     app.run()
