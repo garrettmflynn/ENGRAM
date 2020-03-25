@@ -23,28 +23,48 @@ A Gentle Introduction to Neural Prostheses
     This section gives additional resources for the curious to explore.
 
 
+.. image:: images/neurons.gif
+    :width: 50%
 
 .. _Intro:
 
 Introduction
 ----------------------------------------
 
+Our minds function best unconsciously. Only when we become conscious,
+however, can we take ownership of their processes —-- and control them. 
+
+    "Dementia is troubling because, at the same time as it erodes someone's memory,
+    it also eats away at th[e] capacity to create shared meaning. If someone cannot
+    remember not just where the milk bottle goes, but what a milk bottle is for,
+    then the shared pre-suppositions on which communication, meaning, and identity 
+    depend become badly strained :cite:`Leadbeater2015`.
+
+Dr. Pauley is a dementia neurologist treating patients with 
+anterograde amnesia (the inability to form new memories) as 
+a result of Alzheimer's disease (AD), traumatic brain injury (TBI),
+and stroke. 
+
 Entry Vignette 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 To provide the reader with an inviting Introduction
 to the feel of the context in which the case takes place
 
-.. note::
-    **Dementia neurologist (cases, tools, ethics)**
+.. admonition:: Characters
     
-    - Narrative flow from the perspective of the user
-
-
-    **Aside showing my own growth**
-
+    The plan to provide narrative flow from the perspective of the user
+    1. **"Dr. Pauley": Dementia neurologist confronting**
+    **concrete cases with new tools and unprecedented ethics.**
+    2. **Me: Addressed in asides to show my own growth**
     - Impetus: Neuromancer. To walk upon an electronic ground.
     - Ungeneralized Idea: Cognitive states (epi./phen.) are upheld by multiscale neural activity
     - Generalized Idea: Time and space change, but the ground retains memory.
+    3. **The CNE: Theodore Berger, Dong Song, Xiwei She**
+    4. **The Entrepreneurs:Bryan Johnson, Elon Musk**
+    5. **The Visionaries: Ed Boyden, Rajesh Rao**
+    6. **The Affected:Those with dementia**
+    7. **The Practiced:Epilepsy neurologists who already use RNS devices**
+    8. **The Concerned: FDA (regulators) and INS (ethicists)**
 
 
 An Introduction
@@ -261,6 +281,10 @@ Conclusion
 -----------------------------------------------------------------
 
 A New Era of Open-Source Neuroscience
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+*Coming soon...*
+
+Registries + Standardization: The Need for Speed
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 *Coming soon...*
 
