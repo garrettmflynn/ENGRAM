@@ -7,7 +7,7 @@ API Reference Guide
   api/engram.declarative
   api/engram.procedural
   api/engram.episodic
-  api/engram.working
+  .. api/engram.working
 
 Indices and tables
 ==================

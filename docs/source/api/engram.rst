@@ -10,7 +10,6 @@ Subpackages
    engram.episodic
    engram.procedural
    engram.test
-   engram.working
 
 Submodules
 ----------

@@ -12,26 +12,10 @@ engram.procedural.analyze module
    :undoc-members:
    :show-inheritance:
 
-engram.procedural.data module
------------------------------
-
-.. automodule:: engram.procedural.data
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 engram.procedural.events module
 -------------------------------
 
 .. automodule:: engram.procedural.events
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-engram.procedural.features module
----------------------------------
-
-.. automodule:: engram.procedural.features
    :members:
    :undoc-members:
    :show-inheritance:
@@ -56,14 +40,6 @@ engram.procedural.models module
 -------------------------------
 
 .. automodule:: engram.procedural.models
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-engram.procedural.neo\_handler module
--------------------------------------
-
-.. automodule:: engram.procedural.neo_handler
    :members:
    :undoc-members:
    :show-inheritance:

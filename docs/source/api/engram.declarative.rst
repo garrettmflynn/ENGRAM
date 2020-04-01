@@ -4,10 +4,26 @@ engram.declarative package
 Submodules
 ----------
 
-engram.declarative.engram module
---------------------------------
+engram.declarative.bin module
+-----------------------------
 
-.. automodule:: engram.declarative.engram
+.. automodule:: engram.declarative.bin
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+engram.declarative.cont module
+------------------------------
+
+.. automodule:: engram.declarative.cont
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+engram.declarative.duration module
+----------------------------------
+
+.. automodule:: engram.declarative.duration
    :members:
    :undoc-members:
    :show-inheritance:
@@ -16,14 +32,6 @@ engram.declarative.id module
 ----------------------------
 
 .. automodule:: engram.declarative.id
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-engram.declarative.mneme module
--------------------------------
-
-.. automodule:: engram.declarative.mneme
    :members:
    :undoc-members:
    :show-inheritance:

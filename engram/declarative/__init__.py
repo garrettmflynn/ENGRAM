@@ -8,18 +8,21 @@ Classes:
 
 .. autoclass:: ID
 
-.. autoclass:: Engram
+.. autoclass:: Duration
 
-.. autoclass:: Mneme
+.. autoclass:: Bin
+
+.. autoclass:: Cont
 
 '''
 
 import engram
 from engram.declarative.id import ID
-from engram.declarative.engram import Engram
-from engram.declarative.mneme import Mneme
+from engram.declarative.duration import Duration
+from engram.declarative.bin import Bin
+from engram.declarative.cont import Cont
 
-objectlist = [ID, Engram, Mneme]
+objectlist = [ID, Duration, Bin, Cont]
 
 objectnames = [ob.__name__ for ob in objectlist]
 class_by_name = dict(zip(objectnames, objectlist))
