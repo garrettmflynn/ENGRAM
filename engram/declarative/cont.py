@@ -8,7 +8,7 @@ from scipy import signal
 
 class Cont(object):
     def __init__(self, id, data=[], timestamps = [], \
-                channel_labels = [], settings=None):
+                channel_labels = [], metadata=None):
 
         # Get number of elements in data
         numel = 1
@@ -22,11 +22,11 @@ class Cont(object):
             self.timestamps = np.asarray(timestamps)
             self.data = np.asarray(data) # Channels x Time
             self.representation = 'raw'
-            self.settings = settings
+            self.metadata = metadata
 
             self.nD_labels = {}
             self.nD_labels['1D'] = np.asarray(channel_labels)
-            self.nD_labels['2D'] = np.arange(0,np.size(self.data, 1))/self.settings['fs'] # Time
+            self.nD_labels['2D'] = np.arange(0,np.size(self.data, 1))/self.metadata['fs'] # Time
             self.nD_labels['3D'] = None # ???
 
     def __repr__(self):
@@ -40,18 +40,18 @@ class Cont(object):
         lfp = np.empty(self.data.shape)
         if np.ndim(self.data) == 2:
             for channel in range(np.size(self.data, 0)):
-                self.data[channel, :] = filters.select('bandpass',self.data[channel, :],min=self.settings['bandpass_min'],
-                                                    max=self.settings['bandpass_max'],
-                                                    fs=self.settings['fs'],
+                self.data[channel, :] = filters.select('bandpass',self.data[channel, :],min=self.metadata['bandpass_min'],
+                                                    max=self.metadata['bandpass_max'],
+                                                    fs=self.metadata['fs'],
                                                     order=5)
-            self.nD_labels['2D'] = np.asarray(range(np.size(self.data, 1)))/self.settings['fs']
+            self.nD_labels['2D'] = np.asarray(range(np.size(self.data, 1)))/self.metadata['fs']
 
         elif np.ndim(self.data) == 1:
-            self.data = filters.select('bandpass',self.data,min=self.settings['bandpass_min'],
-                                                    max=self.settings['bandpass_max'],
-                                                    fs=self.settings['fs'],
+            self.data = filters.select('bandpass',self.data,min=self.metadata['bandpass_min'],
+                                                    max=self.metadata['bandpass_max'],
+                                                    fs=self.metadata['fs'],
                                                     order=5)
-            self.nD_labels['2D'] = range(np.size(self.data,1))/self.settings['fs']
+            self.nD_labels['2D'] = range(np.size(self.data,1))/self.metadata['fs']
             
 
         else:
@@ -67,8 +67,8 @@ class Cont(object):
 
         N = 1e5
         amp = 2 * np.sqrt(2)
-        noise_power = 0.01 * self.settings['fs'] / 2
-        time = np.arange(N) / float(self.settings['fs'])
+        noise_power = 0.01 * self.metadata['fs'] / 2
+        time = np.arange(N) / float(self.metadata['fs'])
         mod = 500 * np.cos(2 * np.pi * 0.25 * time)
         carrier = amp * np.sin(2 * np.pi * 3e3 * time + mod)
         noise = np.random.normal(scale=np.sqrt(noise_power),
@@ -76,16 +76,16 @@ class Cont(object):
         noise *= np.exp(-time / 5)
         x = carrier + noise
 
-        window= int(self.settings['t_bin'] * self.settings['fs'])
+        window= int(self.metadata['t_bin'] * self.metadata['fs'])
         c_len = lfp.shape[0]
 
         if np.ndim(lfp) == 2:
             for channel in range(len(lfp)):
                 temp_f, temp_t, temp_Zxx = signal.spectrogram(lfp[channel, :],
-                                                                self.settings['fs'],
+                                                                self.metadata['fs'],
                                                                 'hann', nperseg=window)
 
-                freq_slice = np.where((temp_f >= self.settings['2D_min']) & (temp_f <= self.settings['2D_max']))
+                freq_slice = np.where((temp_f >= self.metadata['2D_min']) & (temp_f <= self.metadata['2D_max']))
                 Zxx = temp_Zxx[freq_slice, :][0]
                 del temp_Zxx
 
@@ -100,10 +100,10 @@ class Cont(object):
 
         if np.ndim(lfp) == 1:
             temp_f, temp_t, temp_Zxx = signal.spectrogram(lfp,
-                                                            self.settings['fs'],
+                                                            self.metadata['fs'],
                                                             'hann', nperseg=window)
 
-            freq_slice = np.where((temp_f >= self.settings['2D_min']) & (temp_f <= self.settings['2D_max']))
+            freq_slice = np.where((temp_f >= self.metadata['2D_min']) & (temp_f <= self.metadata['2D_max']))
             Zxx = temp_Zxx[freq_slice, :][0]
             del temp_Zxx
             power = np.empty([c_len, np.shape(Zxx)[1], np.shape(Zxx)[0]], dtype=float)
@@ -118,15 +118,15 @@ class Cont(object):
         self.nD_labels['2D'] = t
         self.nD_labels['3D'] = f
 
-        if self.settings['norm']:
+        if self.metadata['norm']:
             self.normalize()
 
         return self
 
     def normalize(self):
-        if self.settings['log_transform']:
+        if self.metadata['log_transform']:
             self.data = 10*np.log10(self.data)
-        if self.settings['norm_method'] == 'ZSCORE':
+        if self.metadata['norm_method'] == 'ZSCORE':
             if np.ndim(self.data) == 3:
                 freqMu = np.mean(self.data,axis=1)
                 freqSig = np.std(self.data,axis=1)
@@ -143,13 +143,13 @@ class Cont(object):
         return self
 
     def resample(self,fs):
-        if fs == self.settings['fs']:
+        if fs == self.metadata['fs']:
             return 'Current frequency is already at the desired value.'
             
         else:
-            num_points = round(np.shape(self.data,1) * (self.settings['fs']/fs))
+            num_points = round(np.shape(self.data,1) * (self.metadata['fs']/fs))
             self.data = signal.resample(self.data,num_points)
-            data = filters.select('bandpass', min=0, max=self.settings['fs'],
+            data = filters.select('bandpass', min=0, max=self.metadata['fs'],
                                     fs=fs, order=5)
             downsample = np.shape(self.data,1)/np.shape(self.data,1)
             print('Sampled from ' + fs + ' to ' + downsample + 'Hz')

@@ -7,24 +7,23 @@ from engram.declarative.cont import Cont
 import numpy as np
 
 class Duration(object):
-    def __init__(self, id, bins=[], bin_channels = [], bin_timestamps=[],conts=[], cont_channels = [],events={},metadata={},labels={},settings=None):
+    def __init__(self, id, bins=[], bin_channels = [], bin_timestamps=[],conts=[], cont_channels = [],events={},labels={},metadata=None):
 
         self.id = id
 
         if bins is not None:
-            self.bins = [Bin(id, data=bins, timestamps=bin_timestamps, channel_labels=bin_channels, settings=settings)]
+            self.bins = [Bin(id, data=bins, timestamps=bin_timestamps, channel_labels=bin_channels, metadata=metadata)]
         else:
             self.bins = []
         if conts is not None:
-            self.conts = [Cont(id, data=conts, channel_labels=cont_channels, settings=settings)]
+            self.conts = [Cont(id, data=conts, channel_labels=cont_channels, metadata=metadata)]
         else:
             self.conts = []
         
         self.events = events
-        self.metadata = metadata
         self.trial_labels = np.asarray(labels)
         self.trials = None
-        self.settings = settings
+        self.metadata = metadata
 
     def __repr__(self):
         return "Cont('{},'{}',{})".format(self.id, self.date)
@@ -34,13 +33,13 @@ class Duration(object):
 
     # Data Manipulation
     def addBin(self, data = [], timestamps = [], channel_labels = []):
-        self.bins.append(Bin(self.id,data=data, timestamps=timestamps, channel_labels=channel_labels, settings=self.settings))
+        self.bins.append(Bin(self.id,data=data, timestamps=timestamps, channel_labels=channel_labels, metadata=self.metadata))
 
     def addCont(self, data = [], timestamps = [], channel_labels = []):
-        self.conts.append(Cont(self.id, data=data, timestamps=timestamps, channel_labels=channel_labels, settings=self.settings))
+        self.conts.append(Cont(self.id, data=data, timestamps=timestamps, channel_labels=channel_labels, metadata=self.metadata))
 
     def makeROIs(self):
-        times = self.events[self.settings['event_of_interest']]
+        times = self.events[self.metadata['event_of_interest']]
         
         # Only continue if Conts and Bins have the same time vectors
         nconts = len(self.conts)
@@ -54,7 +53,7 @@ class Duration(object):
         for trial,time in enumerate(times):
             for ii, obj_type in enumerate(objects):
                 for jj, obj in enumerate(objects[obj_type]):
-                    bounds = self.settings['roi_bounds']
+                    bounds = self.metadata['roi_bounds']
                     upper_index = (np.abs(obj.nD_labels['2D'] - (time + bounds[1]))).argmin()
                     lower_index = (np.abs(obj.nD_labels['2D'] - (time + bounds[0]))).argmin()
                     diff_one = upper_index-lower_index
@@ -85,8 +84,8 @@ class Duration(object):
 
     def container_factory(self,style=None, data = [], timestamps = [], channel_labels = []):
         if style == "Bins":
-            return Bin(self.id, data=data, timestamps=timestamps, channel_labels=channel_labels, settings=self.settings)
+            return Bin(self.id, data=data, timestamps=timestamps, channel_labels=channel_labels, metadata=self.metadata)
         if style == "Conts":
-            return Cont(self.id, data=data, timestamps=timestamps, channel_labels=channel_labels, settings=self.settings)
+            return Cont(self.id, data=data, timestamps=timestamps, channel_labels=channel_labels, metadata=self.metadata)
         else:
             raise Exception("Unrecognized container style.")

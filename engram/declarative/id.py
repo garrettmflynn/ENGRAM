@@ -21,13 +21,13 @@ class ID(object):
     given recording session.
     '''
 
-    def __init__(self, settings=None, load=False):
+    def __init__(self, metadata=None, load=False):
 
-        self.id = settings['name']
-        self.project = settings['project']
+        self.id = metadata['name']
+        self.project = metadata['project']
         self.date = datetime.datetime.now().strftime("%d-%m-%Y_%I-%M-%S_%p")
         self.durations = []
-        self.settings = settings
+        self.metadata = metadata
 
     def __repr__(self):
         return "ID('{},'{}',{})".format(self.id, self.date)
@@ -35,8 +35,8 @@ class ID(object):
     def __str__(self):
         return '{} _ {}'.format(self.id, self.date)
 
-    def addDuration(self, bins=[], bin_timestamps = [], bin_channels = [], conts=[], cont_channels = [], events={},metadata={},labels={}):
-        self.durations.append(Duration(self.id, bins, bin_channels, bin_timestamps, conts, cont_channels, events, metadata, labels, self.settings))
+    def addDuration(self, bins=[], bin_timestamps = [], bin_channels = [], conts=[], cont_channels = [], events={},labels={}):
+        self.durations.append(Duration(self.id, bins, bin_channels, bin_timestamps, conts, cont_channels, events, labels, self.metadata))
    
     def model(self, method='channels', model_type='CNN'):
         train.train(model_type, self.trial_features, self.trial_labels)
@@ -49,8 +49,8 @@ class ID(object):
             pickle.dump(self, fp)
         print(self.id + " saved!")
 
-    def load(self, settings=None, datadir='users'):
-        filename = os.path.join(datadir, f"{self.settings['name']}")
+    def load(self, metadata=None, datadir='users'):
+        filename = os.path.join(datadir, f"{self.metadata['name']}")
         loadedID = pickle.load(open(filename, "rb"))
         print(loadedID.id + " loaded!")
 
@@ -76,7 +76,7 @@ class ID(object):
     
     def extractTrials(self):
         for ii,duration in enumerate(self.durations):
-            self.duration[ii].makeROIs()
+            duration.makeROIs()
 
     def episode(self, shader='engram'):
         envs.select(shader=shader,id=self)

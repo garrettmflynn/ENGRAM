@@ -1,26 +1,21 @@
 from __future__ import division
 from __future__ import print_function
 import vispy
-
-
-# Note : All files currently copied from Vispy examples.
-# See http://vispy.org/gallery.html for similar work.
-
-
+import numpy as np
+import math
 
 def select(shader="engramv1",id=None):
     selection = {
         "engramv1" : engramv1,
         "engram": engram,
         "shadertoy" : shadertoy,
-        "fluid" : fluid,
         "oscilloscope" : oscilloscope,
     }
     
     # Get the function from switcher dictionary
     func = selection.get(shader, lambda: "Invalid event parser")
     # Execute the function
-    if (shader != 'engramv1') | (shader != 'engram'):
+    if (shader != 'engramv1') and (shader != 'engram'):
         return func()
     else:
         return func(id)
@@ -28,76 +23,67 @@ def select(shader="engramv1",id=None):
 
 # ____________________________ CUSTOM ENVIRONMENTS ____________________________
 def engramv1(id):
-
-    import numpy as np
     from vispy import app, gloo, visuals
     from vispy.util.transforms import perspective, translate, rotate
-    import math
+
+    # ____________________________ DATA ____________________________
+
+    # Load the xyz coordinates and corresponding subject name :
+    # mat = np.load(download_file('xyz_sample.npz', astype='example_data'))
+    # xyz, subjects = mat['xyz'], mat['subjects']
 
     metadata = id.durations[0].metadata
     binary = id.durations[0].bins[0]
 
-    X = []
-    Y = []
-    Z = []
-    R = []
-    G = []
-    B = []
-    W = []
-    positions = metadata['region_positions']
-    assignments = metadata['stream_regions']
+    positions = metadata['stream_pattern']['positions']
+    assignments = metadata['stream_pattern']['hierarchy']
 
     SPACING = 6 # In MNI coordinates
 
-    n_streams_in_region = {}
-    for stream in assignments:
-        region = assignments[stream]
-        if region not in n_streams_in_region:
-            n_streams_in_region[region] = 0 
-        else:
-            n_streams_in_region[region] += 1
+    n_dims = np.shape(assignments)[1]
+    existing_levels = []
+    intersection_matrices = {}
+    intersection_matrices['indices'] = np.empty([])
+    intersection_matrices['streams'] = np.empty([])
+    intersection_matrices['positions'] = np.empty([])
+    intersection_matrices['hierarchy_lookup'] = []
 
-    # Assign Positions + Color
-    n_streams = {}
-    n_sources = 0
-    for stream in assignments:
-        region = assignments[stream]
-        if region not in n_streams:
-            n_streams[region] = 0 
-        n_sources_in_stream = sum(binary.nD_labels['1D'] == stream)
-        side = math.ceil((n_sources_in_stream)**(1./2.)) # (1./3.))
-        for source in range(n_sources_in_stream):
-            x_off = SPACING * (((source/n_sources_in_stream)//(side**2)) - (side-1)/2)
-            y_off = SPACING * (((source/n_sources_in_stream)%side) - (side-1)/2)
-            z_off = 0 #SPACING * ((((source/n_sources_in_stream)%(side**2))//side) - (side-1)/2)
-            X.append(positions[region][0] + x_off)
-            Y.append(positions[region][1] + y_off)
-            Z.append(positions[region][2] + z_off + (SPACING*n_streams[region]))
-            R.append((n_streams[region]/n_streams_in_region[region]))
-            G.append((n_streams[region]/n_streams_in_region[region]))
-            B.append((n_streams[region]/n_streams_in_region[region]))
-            W.append(1.) # Opacity 
-        n_sources += n_sources_in_stream
-        n_streams[region] += 1 
+    # Derive Intersection Matrix
+    for k, hierarchy in enumerate(assignments):
+        if '' not in hierarchy:
+            intersection = []
+            for level, v in enumerate(hierarchy):
+                    if len(intersection_matrices['hierarchy_lookup']) <= level:
+                        intersection_matrices['hierarchy_lookup'].append([])
+                        intersection_matrices['hierarchy_lookup'][level].extend([v])
+                    if v not in intersection_matrices['hierarchy_lookup'][level]:
+                        intersection_matrices['hierarchy_lookup'][level].extend([v])
+                    distinction = np.where(np.asarray(intersection_matrices['hierarchy_lookup'][level]) == v)[0][0]
+                    intersection.append(distinction)
+            if intersection:
+                intersection = np.expand_dims(np.array(intersection), axis=0)
+                pos = np.expand_dims(np.array(positions[k]), axis=0)
+                stream = np.expand_dims(np.array(metadata['all_streams'][k]), axis=0)
+                source_count = np.expand_dims(np.arange(np.array(sum(binary.nD_labels['1D']==metadata['all_streams'][k]))), axis=0)
+                if k is 0:
+                    intersection_matrices['indices'] = intersection
+                    intersection_matrices['streams'] = stream
+                    intersection_matrices['sources'] = source_count
+                    intersection_matrices['positions'] = pos
+                    
+                else:
+                    intersection_matrices['indices'] = np.append(intersection_matrices['indices'], intersection,axis=0)
+                    intersection_matrices['streams'] = np.append(intersection_matrices['streams'], stream,axis=0)
+                    intersection_matrices['sources'] = np.append(intersection_matrices['sources'],source_count+intersection_matrices['sources'][k-1][-1]+1,axis=0)
+                    intersection_matrices['positions'] = np.append(intersection_matrices['positions'], pos,axis=0)
 
-    print('sources: ' + str(n_sources))
+    xyz, data = position_slicer(intersection_matrices,method='full')
+    X = xyz[:,0]
+    Y = xyz[:,1]
+    Z = xyz[:,2]
     X = 6*((np.asarray(X) - min(X))/(max(X)-min(X)) - .5)
     Y = 6*((np.asarray(Y) - min(Y))/(max(Y)-min(Y)) - .5)
     Z = 6*((np.asarray(Z) - min(Z))/(max(Z)-min(Z)) - .5)
-
-    # Create vertices (all points in the atom)
-    xyzs = np.zeros((n_sources,4)).astype('float32')
-    data = np.zeros(n_sources, [('a_color', np.float32, 4),
-                        ('a_rotation', np.float32, 4)])
-
-    xyzs[:, 0] = X
-    xyzs[:, 1] = Y
-    xyzs[:, 2] = Z
-
-    data['a_color'][:, 0] = R
-    data['a_color'][:, 1] = G
-    data['a_color'][:, 2] = B
-    data['a_color'][:, 3] = W
 
     # Convert binary array into visualizable continuous values
     TRAIL = 50
@@ -117,8 +103,12 @@ def engramv1(id):
             spikes[lb_1[ii]:ub_1[ii],one_array[1][ii]] += np.linspace(0,1,ub_1[ii]-lb_1[ii])
             spikes[lb_2[ii]:ub_2[ii],one_array[1][ii]] += np.linspace(1,0,ub_2[ii]-lb_2[ii])
 
+    
+    
+    xyzs = np.zeros((intersection_matrices['sources'].size,4)).astype('float32')
+    xyzs[:,0:3] = xyz
     data['a_rotation'] = np.repeat(
-        np.random.uniform(0, .1, (n_sources, 4)).astype(np.float32), 1, axis=0)
+        np.random.uniform(0, .1, (intersection_matrices['sources'].size, 4)).astype(np.float32), 1, axis=0)
 
 
     vert = """
@@ -188,7 +178,7 @@ def engramv1(id):
         float val = sin(a_xyzs.y*a_xyzs.y);
 
         v_color = a_color;
-        v_color.r = a_xyzs.w;
+        v_color.r = v_color.r*a_xyzs.w;
     }
     """
 
@@ -316,9 +306,6 @@ def engramv1(id):
     c = Canvas()
     app.run()
 def engram(id):
-    import numpy as np
-    import math
-
 
     from .gui import Engram
     from visbrain.objects import SourceObj, ConnectObj
@@ -335,69 +322,51 @@ def engram(id):
 
     metadata = id.durations[0].metadata
     binary = id.durations[0].bins[0]
-    
-    X = []
-    Y = []
-    Z = []
-    R = []
-    G = []
-    B = []
-    W = []
-    positions = metadata['region_positions']
-    assignments = metadata['stream_regions']
+
+    positions = metadata['stream_pattern']['positions']
+    assignments = metadata['stream_pattern']['hierarchy']
 
     SPACING = 6 # In MNI coordinates
 
-    n_streams_in_region = {}
-    for stream in assignments:
-        region = assignments[stream]
-        if region not in n_streams_in_region:
-            n_streams_in_region[region] = 0 
-        else:
-            n_streams_in_region[region] += 1
+    n_dims = np.shape(assignments)[1]
+    existing_levels = []
+    intersection_matrices = {}
+    intersection_matrices['indices'] = np.empty([])
+    intersection_matrices['streams'] = np.empty([])
+    intersection_matrices['positions'] = np.empty([])
+    intersection_matrices['hierarchy_lookup'] = []
 
-    # Assign Positions + Color
-    n_streams = {}
-    n_sources = 0
-    for stream in assignments:
-        region = assignments[stream]
-        if region not in n_streams:
-            n_streams[region] = 0 
-        n_sources_in_stream = sum(binary.nD_labels['1D'] == stream)
-        side = math.ceil((n_sources_in_stream)**(1./2.)) # (1./3.))
-        for source in range(n_sources_in_stream):
-            x_off = SPACING * (((source/n_sources_in_stream)//(side**2)) - (side-1)/2)
-            y_off = SPACING * (((source/n_sources_in_stream)%side) - (side-1)/2)
-            z_off = 0 #SPACING * ((((source/n_sources_in_stream)%(side**2))//side) - (side-1)/2)
-            X.append(positions[region][0] + x_off)
-            Y.append(positions[region][1] + y_off)
-            Z.append(positions[region][2] + z_off + (SPACING*n_streams[region]))
-            R.append((n_streams[region]/n_streams_in_region[region]))
-            G.append((n_streams[region]/n_streams_in_region[region]))
-            B.append((n_streams[region]/n_streams_in_region[region]))
-            W.append(1.) # Opacity 
-        n_sources += n_sources_in_stream
-        n_streams[region] += 1 
+    # Derive Intersection Matrix
+    for k, hierarchy in enumerate(assignments):
+        if '' not in hierarchy:
+            intersection = []
+            for level, v in enumerate(hierarchy):
+                    if len(intersection_matrices['hierarchy_lookup']) <= level:
+                        intersection_matrices['hierarchy_lookup'].append([])
+                        intersection_matrices['hierarchy_lookup'][level].extend([v])
+                    if v not in intersection_matrices['hierarchy_lookup'][level]:
+                        intersection_matrices['hierarchy_lookup'][level].extend([v])
+                    distinction = np.where(np.asarray(intersection_matrices['hierarchy_lookup'][level]) == v)[0][0]
+                    intersection.append(distinction)
+            if intersection:
+                intersection = np.expand_dims(np.array(intersection), axis=0)
+                pos = np.expand_dims(np.array(positions[k]), axis=0)
+                stream = np.expand_dims(np.array(metadata['all_streams'][k]), axis=0)
+                source_count = np.expand_dims(np.arange(np.array(sum(binary.nD_labels['1D']==metadata['all_streams'][k]))), axis=0)
+                if k is 0:
+                    intersection_matrices['indices'] = intersection
+                    intersection_matrices['streams'] = stream
+                    intersection_matrices['sources'] = source_count
+                    intersection_matrices['positions'] = pos
+                    
+                else:
+                    intersection_matrices['indices'] = np.append(intersection_matrices['indices'], intersection,axis=0)
+                    intersection_matrices['streams'] = np.append(intersection_matrices['streams'], stream,axis=0)
+                    intersection_matrices['sources'] = np.append(intersection_matrices['sources'],source_count+intersection_matrices['sources'][k-1][-1]+1,axis=0)
+                    intersection_matrices['positions'] = np.append(intersection_matrices['positions'], pos,axis=0)
 
-    print('sources: ' + str(n_sources))
-    X = 6*((np.asarray(X) - min(X))/(max(X)-min(X)) - .5)
-    Y = 6*((np.asarray(Y) - min(Y))/(max(Y)-min(Y)) - .5)
-    Z = 6*((np.asarray(Z) - min(Z))/(max(Z)-min(Z)) - .5)
-
-    # Create vertices (all points in the atom)
-    xyz = np.zeros((n_sources,3)).astype('float32')
-    data = np.zeros(n_sources, [('a_color', np.float32, 4),
-                        ('a_rotation', np.float32, 4)])
-
-    xyz[:, 0] = X
-    xyz[:, 1] = Y
-    xyz[:, 2] = Z
-
-    data['a_color'][:, 0] = R
-    data['a_color'][:, 1] = G
-    data['a_color'][:, 2] = B
-    data['a_color'][:, 3] = W
-
+    xyz, data = position_slicer(intersection_matrices,method='full')
+    
     # Convert binary array into visualizable continuous values
     TRAIL = 50
     spikes = binary.data.T[0:100000]
@@ -468,6 +437,9 @@ def engram(id):
 
 
 # ____________________________ VISPY EXAMPLES ____________________________
+# See http://vispy.org/gallery.html for similar work.
+
+
 
 def shadertoy():
 
@@ -965,3 +937,77 @@ def oscilloscope():
 
 
     app.run()
+
+
+def position_slicer(intersection_matrices, method='full'):
+
+    SPACING = 1 # In MNI coordinates
+    X = []
+    Y = []
+    Z = []
+    R = []
+    G = []
+    B = []
+    W = []
+
+    indices = intersection_matrices['indices']
+    positions = intersection_matrices['positions']
+    sources = intersection_matrices['sources']
+    if method is 'full':
+
+        groups, n_streams_in_group = np.unique(intersection_matrices['indices'],axis=0,return_counts=True)
+        group_pos = np.unique(intersection_matrices['positions'],axis=0)
+        for group, group_properties in enumerate(groups):
+            streams = np.squeeze(np.argwhere(np.all((indices-group_properties)==0, axis=1)))
+            print('Group ' + str(group) + ': ' + str(streams))
+            n_sources_in_group = sources[streams].size
+            n_sources_in_streams = sources[streams]
+            for stream, source_inds in enumerate(n_sources_in_streams):
+                source_inds -= source_inds[0]
+                side = math.ceil((len(source_inds)-1)**(1./2.)) # (1./3.))
+                x_off = SPACING * ((source_inds//(side*2)) - ((side-1)/2))
+                y_off = SPACING * ((source_inds%side) - ((side-1)/2))
+                z_off = np.tile(0.,len(source_inds)) #SPACING * ((((source/n_sources_in_group)%(side**2))//side) - (side-1)/2)
+                X = np.append(X,group_pos[group][0] + x_off)
+                Y = np.append(Y,group_pos[group][1] + y_off)
+                Z = np.append(Z,group_pos[group][2] + z_off + (SPACING*stream))
+                R = np.append(R,np.tile(group/(len(groups)-1),len(source_inds)))
+                G = np.append(G,np.tile(group/(len(groups)-1),len(source_inds)))
+                B = np.append(B,np.tile(group/(len(groups)-1),len(source_inds)))
+                W = np.append(W,np.tile(1.,len(source_inds))) # Opacity 
+
+    n_sources = sources.size
+    print('sources: ' + str(n_sources))
+
+    # Create vertices (all points in the atom)
+    xyz = np.zeros((n_sources,3)).astype('float32')
+    data = np.zeros(n_sources, [('a_color', np.float32, 4),
+                        ('a_rotation', np.float32, 4)])
+
+    xyz[:, 0] = X
+    xyz[:, 1] = Y
+    xyz[:, 2] = Z
+
+    data['a_color'][:, 0] = R
+    data['a_color'][:, 1] = G
+    data['a_color'][:, 2] = B
+    data['a_color'][:, 3] = W
+
+    return xyz, data
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
