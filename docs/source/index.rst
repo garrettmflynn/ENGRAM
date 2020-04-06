@@ -9,7 +9,11 @@ for developing cognitive neural prostheses.
 
 |PyPI badge| |GitHub badge| |Docs badge| |Travis badge| |License badge|
 
-Promo Video: https://youtu.be/axIlS-cYoX4
+Promo Video
+-----------------
+.. image:: images/EngramPromo.png
+    :width: 50%
+    :target: https://youtu.be/axIlS-cYoX4
 
 .. toctree::
     :maxdepth: 2
