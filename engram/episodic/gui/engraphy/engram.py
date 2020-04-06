@@ -19,7 +19,8 @@ from .cbar import EngramCbar
 from .user import EngramUserMethods
 from visbrain._pyqt_module import _PyQtModule
 from visbrain.config import PROFILER, CONFIG
-from visbrain.utils import (color2vb)
+
+from ...envs import position_slicer
 
 import numpy as np
 
@@ -98,8 +99,8 @@ class Engram(_PyQtModule, UiInit, UiElements, Visuals, EngramCbar,
         Amount to iterate the rotation
     carousel_choice: list | [0,2]
         Combinatorial carousel of display options. 0th index denotes how many. 1st index denotes which one.
-    carousel_option_names: Numpy string array | array(['Engram'])
-        Information to display about source organization (all options)
+    carousel_metadata: dictionary 
+        Information about how to display the source organization
     """
 
     def __init__(self, bgcolor='black', verbose=None, **kwargs):
@@ -135,16 +136,20 @@ class Engram(_PyQtModule, UiInit, UiElements, Visuals, EngramCbar,
 
 
         # ====================== Carousel Options ======================
+        if 'carousel_metadata' in kwargs.keys():  
+            self.carousel_metadata = kwargs['carousel_metadata']
+        else:
+            self.carousel_metadata = {}
 
         # Carousel Display Method
         if 'carousel_display_method' in kwargs.keys():    
             self._carousel_display_method = kwargs['carousel_display_method']
         else:
-            self._carousel_display_method = kwargs['carousel_display_method']
+            self._carousel_display_method = 'text'
     
         # Carousel Options
-        if 'carousel_option_names' in kwargs.keys():
-            options = np.asarray(kwargs['carousel_option_names'])
+        if 'hierarchy_lookup' in self.carousel_metadata:
+            options = np.asarray(self.carousel_metadata['hierarchy_lookup'])
 
             self._carousel_options_inds = [np.asarray([0])]
 
@@ -162,9 +167,9 @@ class Engram(_PyQtModule, UiInit, UiElements, Visuals, EngramCbar,
                             combs.append(np.array(list(comb))+1)
                     else:
                         if ll == 0:
-                            combs = [np.array(comb[0]+1)]
+                            combs = [np.array([comb[0]+1])]
                         else:
-                            combs.append(np.array(list(comb)[0]+ 1))
+                            combs.append(np.array([list(comb)[0]+ 1]))
 
                 self._carousel_options_inds.append(combs)
             
@@ -177,7 +182,7 @@ class Engram(_PyQtModule, UiInit, UiElements, Visuals, EngramCbar,
             self._carousel_options = np.asarray(new_options)
 
         else:
-            self._carousel_options_inds = [np.asarray([0])]
+            self._carousel_options_inds = [np.asarray([])]
 
             self._carousel_options = np.asarray(['None'])
 
@@ -188,11 +193,6 @@ class Engram(_PyQtModule, UiInit, UiElements, Visuals, EngramCbar,
         else:
             self._carousel_choice = [0,0]
             self._prev_carousel_choice = [0,0]
-
-        if 'carousel_option_names' in kwargs.keys():
-            self._carousel_option_names = kwargs['carousel_option_names']
-        else:
-            self._carousel_option_names = kwargs['carousel_option_names']
 
         # Display Method
         self.update_carousel()
@@ -216,13 +216,10 @@ class Engram(_PyQtModule, UiInit, UiElements, Visuals, EngramCbar,
                 self._time = Text(t_str, parent=self.view.canvas.scene, color='white')
             else:
                 self._time.text = t_str
-            self._time.font_size = self.view.canvas.size[1] // 100
-            self._time.pos = self.view.canvas.size[0] // 2, 9*self.view.canvas.size[1] // 10
+            self._time.anchors = ('right','bottom')
+            self._time.font_size = self.view.canvas.size[1] // 200
+            self._time.pos = (49)*self.view.canvas.size[0] // 50, (19)*self.view.canvas.size[1] // 20
             self._time.update()
-
-            if self._carousel_choice != self._prev_carousel_choice:
-                self.update_carousel()
-                self._prev_carousel_choice = self._carousel_choice
 
 
         kw = dict(connect=on_timer, app=CONFIG['VISPY_APP'],
@@ -276,11 +273,28 @@ class Engram(_PyQtModule, UiInit, UiElements, Visuals, EngramCbar,
         # Colorbar :
         self._fcn_menu_disp_cbar()
 
+    
+    def update_positions(self):
+        n_choices = self._carousel_choice[0]
+        which_choice = self._carousel_choice[1]
+        choice = self._carousel_options_inds[n_choices][which_choice] - 1 # Shift
+        print(choice)
+        xyz = position_slicer(self.carousel_metadata,method=choice,ignore_streams=True)
+        for source in self.sources:
+            source._update_position(xyz=xyz)
+        for connect in self.connect:
+            connect._update_position(nodes=xyz)
+    
     def update_carousel(self):
 
-        self._labels = [] 
-
         if self._carousel_display_method == 'text':
+
+            # Initialize
+            if not hasattr(self,'_labels'):
+                self._labels = [Text('', parent=self.view.canvas.scene, color='white')]
+                for count in range(len(self._carousel_options_inds)-2):
+                    self._labels.append(Text('', parent=self.view.canvas.scene, color='white'))
+
             n_choices = self._carousel_choice[0]
             which_choice = self._carousel_choice[1]
             choice = self._carousel_options_inds[n_choices][which_choice]
@@ -297,9 +311,15 @@ class Engram(_PyQtModule, UiInit, UiElements, Visuals, EngramCbar,
                 else:
                     full_string = val
 
-                self._labels.append(Text(full_string, parent=self.view.canvas.scene, color='white'))
-                self._labels[-1].font_size = self.view.canvas.size[1] // 200
-                self._labels[-1].pos = self.view.canvas.size[0] // 10, (ii+1)*self.view.canvas.size[1] // 20
-                self._labels[-1].update()
+                self._labels[ii].text = full_string
+                self._labels[ii].anchors = ('left','bottom')
+                self._labels[ii].font_size = self.view.canvas.size[1] // 200
+                self._labels[ii].pos = self.view.canvas.size[0] // 50, (19-ii)*self.view.canvas.size[1] // 20
+                self._labels[ii].update()
+            
+            for jj in np.arange(len(self._labels)-(ii+1))+(ii+1):
+                self._labels[jj].text = ''
+                self._labels[jj].update()
+
         else:
             print('No carousel displayed')

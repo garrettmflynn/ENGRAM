@@ -268,6 +268,20 @@ class SourceObj(VisbrainObject):
         text[to_hide] = ''
         self._sources_text.text = text
         self.update()
+    
+    def _update_position(self,xyz=None):
+
+        # Check XYZ :
+        sh = xyz.shape
+        assert sh[1] in [2, 3]
+        self._n_sources = sh[0]
+        pos = xyz if sh[1] == 3 else np.c_[xyz, np.full((len(self),), _z)]
+        self._xyz = vispy_array(pos)
+
+        # Assign XYZ
+        self._sources._data['a_position'] = self._xyz
+        self.update()             
+         
 
     def _update_color(self):
         """Update marker's color."""

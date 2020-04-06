@@ -424,7 +424,7 @@ def engram(id):
     # r_obj.select_roi(select=[idx_rh, idx_lh], unique_color=False, smooth=7, translucent=True)
 
     vb = Engram(source_obj=s_obj,roi_obj=r_obj,connect_obj=c_obj,metadata=metadata,\
-                rotation=0.1,carousel_option_names=intersection_matrices['hierarchy_lookup'],\
+                rotation=0.1,carousel_metadata=intersection_matrices,\
                     carousel_display_method='text')
     vb.engram_control(template='B1',alpha=.02)
     vb.engram_control(visible=False)
@@ -446,12 +446,12 @@ def position_slicer(intersection_matrices, method=[],ignore_streams=False):
     # B = []
     # W = []
 
-    indices = intersection_matrices['indices']
-    positions = intersection_matrices['positions']
-    sources = intersection_matrices['sources']
+    indices = np.copy(intersection_matrices['indices'])
+    positions = np.copy(intersection_matrices['positions'])
+    sources = np.copy(intersection_matrices['sources'])
 
     dims = np.arange(np.shape(indices)[1])
-    if not method:
+    if method is []:
         dim_to_remove = dims
     else:
         dim_to_remove = np.where(dims != method)[0]
@@ -496,7 +496,7 @@ def position_slicer(intersection_matrices, method=[],ignore_streams=False):
     n_sources = sources.size
 
     # Recenter (to canvas) unless all distinctions have been made
-    if dims != method:
+    if dims is not method:
         if len(np.unique(X)) > 1:
             X = ((X - np.min(X))/(max(X) - min(X))) - .5
         else:

@@ -9,7 +9,7 @@ from vispy.scene import visuals
 
 from visbrain.objects.visbrain_obj import VisbrainObject, CombineObjects
 from visbrain.utils import (array2colormap, color2vb, wrap_properties,
-                     vector_to_opacity)
+                     vector_to_opacity,vispy_array)
 
 from .source_obj import SourceObj
 
@@ -183,6 +183,20 @@ class ConnectObj(VisbrainObject):
         """Update the line."""
         self._connect.update()
 
+    def _update_position(self,nodes=None):
+
+        # Check input
+        assert isinstance(nodes, np.ndarray) and nodes.ndim == 2
+        sh = nodes.shape
+        self._n_nodes = sh[0]
+        assert sh[1] >= 2
+        pos = nodes if sh[1] == 3 else np.c_[nodes, np.full((len(self),), _z)]
+        self._pos = pos.astype(np.float32)
+
+        # Build new lines
+        self._build_line()
+        self.update()   
+
     def _update_time(self,timepoint=None):
         if timepoint:                     
             edges = self.time_edges[:,:,int(timepoint)] # fs/time
@@ -191,7 +205,7 @@ class ConnectObj(VisbrainObject):
                 edges = np.ma.masked_array(edges, mask=mask)
             self._edges = edges
             self._build_line()
-            self._connect.update()
+            self.update()
 
     def _build_line(self):
         """Build the connectivity line."""

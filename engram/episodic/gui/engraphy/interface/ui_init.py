@@ -60,7 +60,6 @@ class EngramShortcuts(object):
             :event: the trigger event
             """
             # Internal / external view :
-            print(event.text)
             if event.text == ' ':
                 viz = self._engram_translucent.isChecked()
                 self._engram_translucent.setChecked(not viz)
@@ -84,17 +83,23 @@ class EngramShortcuts(object):
 
             elif event.text in ['i','j','k','l']:
                 if event.text in ['i']:
-                    if self._carousel_choice[1] < (len(self._carousel_options[0])-1):
+                    if self._carousel_choice[1] < (len(self._carousel_options_inds[self._carousel_choice[0]])-1):
                         self._carousel_choice[1] += 1
                 elif event.text in ['k']:
-                    if self._carousel_choice[1] >= 0:
+                    if self._carousel_choice[1] > 0:
                         self._carousel_choice[1] -= 1
                 elif event.text in ['j']:
-                    if self._carousel_choice[0] >= 0:
+                    if self._carousel_choice[0] > 0:
                         self._carousel_choice[0] -=1
+                        self._carousel_choice[1] = 0
                 else:
-                    if self._carousel_choice[0] < (len(self._carousel_options)-1):
+                    if self._carousel_choice[0] < (len(self._carousel_options_inds)-1):
                         self._carousel_choice[0] +=1
+                        self._carousel_choice[1] = 0
+
+                self.update_positions()
+                self.update_carousel()
+                self._prev_carousel_choice = self._carousel_choice
 
         @canvas.events.mouse_release.connect
         def on_mouse_release(event):
