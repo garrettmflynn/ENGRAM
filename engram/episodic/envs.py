@@ -419,9 +419,9 @@ def engram(id):
 
 
     r_obj = RoiObj('aal')
-    # idx_rh = r_obj.where_is('Hippocampus (R)')
-    # idx_lh = r_obj.where_is('Hippocampus (L)')
-    # r_obj.select_roi(select=[idx_rh, idx_lh], unique_color=False, smooth=7, translucent=True)
+    idx_rh = r_obj.where_is('Hippocampus (R)')
+    idx_lh = r_obj.where_is('Hippocampus (L)')
+    r_obj.select_roi(select=[idx_rh, idx_lh], unique_color=False, smooth=7, translucent=True)
 
     vb = Engram(source_obj=s_obj,roi_obj=r_obj,connect_obj=c_obj,metadata=metadata,\
                 rotation=0.1,carousel_metadata=intersection_matrices,\
@@ -496,7 +496,7 @@ def position_slicer(intersection_matrices, method=[],ignore_streams=False):
     n_sources = sources.size
 
     # Recenter (to canvas) unless all distinctions have been made
-    if dims is not method:
+    if (np.asarray([0,1,2]) != np.asarray([0,1,2])).any():
         if len(np.unique(X)) > 1:
             X = ((X - np.min(X))/(max(X) - min(X))) - .5
         else:
