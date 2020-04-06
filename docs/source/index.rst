@@ -4,16 +4,20 @@ ENGRAM
 ==================
 
 **Encoding Graphical Representations of Activated Memories (ENGRAM)**
-is an open source Python package 
-for developing cognitive neural prostheses.
+is an open-source Python package for deriving stable. microscale spatiotemporal 
+representations (i.e. binary and continuous sensor readings) for human-scale events 
+(e.g. image labels, movement patterns, etc). As a first use-case, ENGRAM uses depth 
+electrode recordings from human epilepsy patients to derive stable neural representations 
+for specific memory contents (e.g. animals, plants, buildings, etc).
 
 |PyPI badge| |GitHub badge| |Docs badge| |Travis badge| |License badge|
 
-Promo Video
------------------
-.. image:: images/EngramPromo.png
-    :width: 50%
+.. figure:: images/Brain.gif
+    :width: 80%
+    :align: center
     :target: https://youtu.be/axIlS-cYoX4
+
+    Click image to view promo video
 
 .. toctree::
     :maxdepth: 2
