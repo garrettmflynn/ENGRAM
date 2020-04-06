@@ -308,7 +308,8 @@ def engramv1(id):
 def engram(id):
 
     from .gui import Engram
-    from visbrain.objects import SourceObj, ConnectObj
+    from visbrain.objects import RoiObj
+    from .objects import SourceObj, ConnectObj
     from visbrain.io import download_file
 
     # Create an empty kwargs dictionnary :
@@ -327,6 +328,7 @@ def engram(id):
     assignments = metadata['stream_pattern']['hierarchy']
 
     SPACING = 6 # In MNI coordinates
+    INITIAL_DISTINCTIONS = []
 
     n_dims = np.shape(assignments)[1]
     existing_levels = []
@@ -365,11 +367,12 @@ def engram(id):
                     intersection_matrices['sources'] = np.append(intersection_matrices['sources'],source_count+intersection_matrices['sources'][k-1][-1]+1,axis=0)
                     intersection_matrices['positions'] = np.append(intersection_matrices['positions'], pos,axis=0)
 
-    xyz, data = position_slicer(intersection_matrices,method='full')
+    xyz = position_slicer(intersection_matrices,method=INITIAL_DISTINCTIONS,ignore_streams=True)
     
     # Convert binary array into visualizable continuous values
-    TRAIL = 50
-    spikes = binary.data.T[0:100000]
+    print('Calculating spike durations')
+    TRAIL = 100
+    spikes = binary.data.T[0:10000]
     one_array = np.where(spikes == 1)
     if not not one_array:
         lb_1 = one_array[0]-TRAIL
@@ -384,57 +387,151 @@ def engram(id):
                     
             spikes[lb_1[ii]:ub_1[ii],one_array[1][ii]] += np.linspace(0,1,ub_1[ii]-lb_1[ii])
             spikes[lb_2[ii]:ub_2[ii],one_array[1][ii]] += np.linspace(1,0,ub_2[ii]-lb_2[ii])
+        
+    spikes = spikes.T
 
     N = xyz.shape[0]  # Number of electrodes
 
-    # Now, create some random data between [-50,50]
-    data = np.random.uniform(-50, 50, (N))
+    text = ['S' + str(k) for k in range(N)]
+    s_obj = SourceObj('SourceObj1', xyz, data=spikes,color='crimson', text=text,alpha=.5,
+                    edge_width=2., radius_min=1., radius_max=25.)
 
-    """Create the source object :
-    """
-    s_obj = SourceObj('SourceObj1', xyz, data, color='crimson', alpha=.5,
-                    edge_width=2., radius_min=2., radius_max=10.)
-    #s_obj.preview()
+    
+    connect = np.zeros((N, N,np.shape(spikes)[1]))
+    valid = np.empty((N, N,np.shape(spikes)[1]))
+    edges = np.arange(N)    
 
-    # """
-    # To connect sources between them, we create a (N, N) array.
-    # This array should be either upper or lower triangular to avoid
-    # redondant connections.
-    # """
-    # connect = 1000 * np.random.rand(N, N)               # Random array of connections
-    # connect[np.tril_indices_from(connect)] = 0  # Set to zero inferior triangle
+    print('Calculating connectivity')
+    for ind,activity in enumerate(spikes):
+        if ind < len(spikes):
+            edge_activity = spikes[ind+1:-1]
+            weight = edge_activity + activity
+            valid = ((edge_activity > 0) & (activity > 0)).astype('int')
+            connect[ind,ind+1:-1] = weight * valid
 
-    # """
-    # Because all connections are not necessary interesting, it's possible to select
-    # only certain either using a select array composed with ones and zeros, or by
-    # masking the connection matrix. We are giong to search vealues between umin and
-    # umax to limit the number of connections :
-    # """
-    # umin, umax = 30, 31
+    umin = 0
+    umax = np.max(connect)
 
-    # # 1 - Using select (0: hide, 1: display):
-    # select = np.zeros_like(connect)
-    # select[(connect > umin) & (connect < umax)] = 1
+    c_obj = ConnectObj('ConnectObj1', xyz, connect,color_by='strength',
+                    dynamic=(.1, 1.), cmap='gnuplot', vmin=umin + .2,
+                    vmax=umax - .1,line_width=0.1,
+                    clim=(umin, umax), antialias=True)
 
-    # # 2 - Using masking (True: hide, 1: display):
-    # connect = np.ma.masked_array(connect, mask=True)
-    # connect.mask[np.where((connect > umin) & (connect < umax))] = False
 
-    # print('1 and 2 equivalent :', np.array_equal(select, ~connect.mask + 0))
+    r_obj = RoiObj('aal')
+    # idx_rh = r_obj.where_is('Hippocampus (R)')
+    # idx_lh = r_obj.where_is('Hippocampus (L)')
+    # r_obj.select_roi(select=[idx_rh, idx_lh], unique_color=False, smooth=7, translucent=True)
 
-    # """Create the connectivity object :
-    # """
-    # c_obj = ConnectObj('ConnectObj1', xyz, connect, color_by='strength',
-    #                 dynamic=(.1, 1.), cmap='gnuplot', vmin=umin + .2,
-    #                 vmax=umax - .1, under='red', over='green',
-    #                 clim=(umin, umax), antialias=True)
-
-    """Finally, pass source and connectivity objects to Engram :
-    """
-    vb = Engram(source_obj=s_obj) #, connect_obj=c_obj)
-
+    vb = Engram(source_obj=s_obj,roi_obj=r_obj,connect_obj=c_obj,metadata=metadata,\
+                rotation=0.1,carousel_option_names=intersection_matrices['hierarchy_lookup'],\
+                    carousel_display_method='text')
+    vb.engram_control(template='B1',alpha=.02)
+    vb.engram_control(visible=False)
+    vb.connect_control(c_obj.name,visible=False)
+    vb.sources_control(s_obj.name,visible=True)
+    vb.rotate(custom=(180-45.0, 0.0))
     vb.show()
 
+
+def position_slicer(intersection_matrices, method=[],ignore_streams=False):
+
+    SPACING = 1 # In MNI coordinates
+    RESCALING = 100
+    X = []
+    Y = []
+    Z = []
+    # R = []
+    # G = []
+    # B = []
+    # W = []
+
+    indices = intersection_matrices['indices']
+    positions = intersection_matrices['positions']
+    sources = intersection_matrices['sources']
+
+    dims = np.arange(np.shape(indices)[1])
+    if not method:
+        dim_to_remove = dims
+    else:
+        dim_to_remove = np.where(dims != method)[0]
+    new_inds = indices
+    new_inds[:,dim_to_remove] = 0
+    groups, streams_in_groups,n_streams_in_group = np.unique(new_inds,axis=0,return_inverse=True,return_counts=True)
+    group_pos = np.empty((np.shape(groups)[0],np.shape(positions)[1]))
+    for ii,group in enumerate(groups):
+        group_indices = np.where(streams_in_groups==ii)[0]
+        group_pos[ii] = np.mean(positions[group_indices],axis=0)
+
+    for group, group_properties in enumerate(groups):
+        streams = np.squeeze(np.argwhere(np.all((new_inds-group_properties)==0, axis=1)))
+        n_sources_in_group = sources[streams].size
+
+        if ignore_streams:
+            n_sources_in_streams = np.asarray([np.arange(n_sources_in_group)])
+        else:
+            n_sources_in_streams = sources[streams]
+
+        for stream, source_inds in enumerate(n_sources_in_streams):
+            source_inds -= source_inds[0]
+            side = math.ceil((len(source_inds)-1)**(1./2.)) # (1./3.))
+            side_1 = SPACING * ((source_inds//(side)) - ((side-1)/2))
+            flatten = np.tile(0.,len(source_inds))
+            side_2 = SPACING * ((source_inds%side) - ((side-1)/2)) #SPACING * ((((source/n_sources_in_group)%(side**2))//side) - (side-1)/2)
+            
+            if ignore_streams:
+                X = np.append(X,group_pos[group][0] + side_1)
+                Y = np.append(Y,group_pos[group][1] + flatten)
+                Z = np.append(Z,group_pos[group][2] + side_2)
+            else:
+                X = np.append(X,group_pos[group][0] + flatten + (SPACING*stream))
+                Y = np.append(Y,group_pos[group][1] + side_1)
+                Z = np.append(Z,group_pos[group][2] + side_2)
+                
+            # R = np.append(R,np.tile(group/(len(groups)-1),len(source_inds)))
+            # G = np.append(G,np.tile(group/(len(groups)-1),len(source_inds)))
+            # B = np.append(B,np.tile(group/(len(groups)-1),len(source_inds)))
+            # W = np.append(W,np.tile(1.,len(source_inds))) # Opacity 
+
+    n_sources = sources.size
+
+    # Recenter (to canvas) unless all distinctions have been made
+    if dims != method:
+        if len(np.unique(X)) > 1:
+            X = ((X - np.min(X))/(max(X) - min(X))) - .5
+        else:
+            X = 0
+        
+        X = RESCALING * X
+
+        if len(np.unique(Y)) > 1:
+            Y = ((Y - min(Y))/(max(Y) - min(Y))) - .5
+        else:
+            Y = 0
+        
+        Y = RESCALING * Y
+
+        if len(np.unique(Z)) > 1:
+            Z = ((Z - min(Z))/(max(Z) - min(Z))) - .5
+        else:
+            Z = 0
+
+        Z = RESCALING * Z
+
+    xyz = np.zeros((n_sources,3)).astype('float32')
+    # data = np.zeros(n_sources, [('a_color', np.float32, 4),
+    #                     ('a_rotation', np.float32, 4)])
+
+    xyz[:, 0] = X
+    xyz[:, 1] = Y
+    xyz[:, 2] = Z
+
+    # data['a_color'][:, 0] = R
+    # data['a_color'][:, 1] = G
+    # data['a_color'][:, 2] = B
+    # data['a_color'][:, 3] = W
+
+    return xyz # , data
 
 # ____________________________ VISPY EXAMPLES ____________________________
 # See http://vispy.org/gallery.html for similar work.
@@ -937,66 +1034,6 @@ def oscilloscope():
 
 
     app.run()
-
-
-def position_slicer(intersection_matrices, method='full'):
-
-    SPACING = 1 # In MNI coordinates
-    X = []
-    Y = []
-    Z = []
-    R = []
-    G = []
-    B = []
-    W = []
-
-    indices = intersection_matrices['indices']
-    positions = intersection_matrices['positions']
-    sources = intersection_matrices['sources']
-    if method is 'full':
-
-        groups, n_streams_in_group = np.unique(intersection_matrices['indices'],axis=0,return_counts=True)
-        group_pos = np.unique(intersection_matrices['positions'],axis=0)
-        for group, group_properties in enumerate(groups):
-            streams = np.squeeze(np.argwhere(np.all((indices-group_properties)==0, axis=1)))
-            print('Group ' + str(group) + ': ' + str(streams))
-            n_sources_in_group = sources[streams].size
-            n_sources_in_streams = sources[streams]
-            for stream, source_inds in enumerate(n_sources_in_streams):
-                source_inds -= source_inds[0]
-                side = math.ceil((len(source_inds)-1)**(1./2.)) # (1./3.))
-                x_off = SPACING * ((source_inds//(side*2)) - ((side-1)/2))
-                y_off = SPACING * ((source_inds%side) - ((side-1)/2))
-                z_off = np.tile(0.,len(source_inds)) #SPACING * ((((source/n_sources_in_group)%(side**2))//side) - (side-1)/2)
-                X = np.append(X,group_pos[group][0] + x_off)
-                Y = np.append(Y,group_pos[group][1] + y_off)
-                Z = np.append(Z,group_pos[group][2] + z_off + (SPACING*stream))
-                R = np.append(R,np.tile(group/(len(groups)-1),len(source_inds)))
-                G = np.append(G,np.tile(group/(len(groups)-1),len(source_inds)))
-                B = np.append(B,np.tile(group/(len(groups)-1),len(source_inds)))
-                W = np.append(W,np.tile(1.,len(source_inds))) # Opacity 
-
-    n_sources = sources.size
-    print('sources: ' + str(n_sources))
-
-    # Create vertices (all points in the atom)
-    xyz = np.zeros((n_sources,3)).astype('float32')
-    data = np.zeros(n_sources, [('a_color', np.float32, 4),
-                        ('a_rotation', np.float32, 4)])
-
-    xyz[:, 0] = X
-    xyz[:, 1] = Y
-    xyz[:, 2] = Z
-
-    data['a_color'][:, 0] = R
-    data['a_color'][:, 1] = G
-    data['a_color'][:, 2] = B
-    data['a_color'][:, 3] = W
-
-    return xyz, data
-
-
-
 
 
 

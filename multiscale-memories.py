@@ -1,6 +1,6 @@
 from engram.declarative import ID
 from engram.procedural import events
-from settings import configtemplate
+from settings import ramconfig
 from scipy.io import loadmat
 import neo
 import numpy as np
@@ -8,7 +8,7 @@ import os
 
 os.system('clear')
 
-existingEngrams = False
+existingEngrams = True
 
 # model_params = np.load('/models/OpenBCI_02_20_20.pkl')
 metadata = {}
@@ -60,7 +60,6 @@ if not existingEngrams:
         bin_chans.append(int(neuron[3:6].lstrip('0')))
 
     id = ID(metadata)
-    # NO LOCATIONS YET
     id.addDuration(conts=data, cont_channels=metadata['all_streams'], \
         bin_timestamps=spike_times, bin_channels=bin_chans, events=events_, \
         labels=trial_labels)

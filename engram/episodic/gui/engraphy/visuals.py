@@ -4,8 +4,10 @@ import logging
 from vispy import scene
 import vispy.visuals.transforms as vist
 
-from visbrain.objects import (CombineSources, CombineConnect,
-                              CombineTimeSeries, CombinePictures,
+# Engram Addition
+from engram.episodic.objects import CombineSources,CombineConnect
+
+from visbrain.objects import (CombineTimeSeries, CombinePictures,
                               CombineVectors, BrainObj, VolumeObj, RoiObj,
                               CrossSecObj)
 from visbrain.config import PROFILER

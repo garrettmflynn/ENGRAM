@@ -7,15 +7,21 @@ and associated transformations
 BrainUserMethods: initialize functions for user interaction.
 """
 import logging
+import itertools
 
 import vispy.scene.cameras as viscam
+from vispy.scene.visuals import Text
+from vispy import app
 
 from .interface import UiInit, UiElements, EngramShortcuts
 from .visuals import Visuals
 from .cbar import EngramCbar
 from .user import EngramUserMethods
 from visbrain._pyqt_module import _PyQtModule
-from visbrain.config import PROFILER
+from visbrain.config import PROFILER, CONFIG
+from visbrain.utils import (color2vb)
+
+import numpy as np
 
 logger = logging.getLogger('visbrain')
 
@@ -86,6 +92,14 @@ class Engram(_PyQtModule, UiInit, UiElements, Visuals, EngramCbar,
         Color to use for values over project_vmax.
     bgcolor : string/tuple | 'black'
         Background color of the GUI.
+    metadata: dictionary
+        Dictionary of data information
+    rotation: float | 0.
+        Amount to iterate the rotation
+    carousel_choice: list | [0,2]
+        Combinatorial carousel of display options. 0th index denotes how many. 1st index denotes which one.
+    carousel_option_names: Numpy string array | array(['Engram'])
+        Information to display about source organization (all options)
     """
 
     def __init__(self, bgcolor='black', verbose=None, **kwargs):
@@ -104,6 +118,117 @@ class Engram(_PyQtModule, UiInit, UiElements, Visuals, EngramCbar,
         # ====================== App creation ======================
         PROFILER("Visual elements", as_type='title')
         Visuals.__init__(self, self.view.wc, **kwargs)
+
+        
+        # ====================== Metadata Storage ======================
+        if 'metadata' in kwargs.keys():
+            self.metadata = kwargs['metadata']
+        else:
+            self.metadata = {}
+
+
+        # ====================== Rotation Kinetics ======================
+        if 'rotation' in kwargs.keys():
+            self.rotation = kwargs['rotation']
+        else:
+            self.rotation = 0
+
+
+        # ====================== Carousel Options ======================
+
+        # Carousel Display Method
+        if 'carousel_display_method' in kwargs.keys():    
+            self._carousel_display_method = kwargs['carousel_display_method']
+        else:
+            self._carousel_display_method = kwargs['carousel_display_method']
+    
+        # Carousel Options
+        if 'carousel_option_names' in kwargs.keys():
+            options = np.asarray(kwargs['carousel_option_names'])
+
+            self._carousel_options_inds = [np.asarray([0])]
+
+            for dims in (range(len(options))):
+
+                _combs = itertools.combinations(range(len(options)), dims+1)
+                _combs = list(_combs)
+
+                for ll,comb in enumerate(_combs):
+                    comb = list(comb)
+                    if len(comb) > 1:
+                        if ll == 0:
+                            combs = [np.array(list(comb))+1]
+                        else:
+                            combs.append(np.array(list(comb))+1)
+                    else:
+                        if ll == 0:
+                            combs = [np.array(comb[0]+1)]
+                        else:
+                            combs.append(np.array(list(comb)[0]+ 1))
+
+                self._carousel_options_inds.append(combs)
+            
+            self._carousel_options_inds[0] = [self._carousel_options_inds[0]]
+        
+            options = list(options)
+            new_options = [np.asarray(['None'])]
+            for ii in np.arange(len(options))+1:
+                new_options.append(options[ii-1])
+            self._carousel_options = np.asarray(new_options)
+
+        else:
+            self._carousel_options_inds = [np.asarray([0])]
+
+            self._carousel_options = np.asarray(['None'])
+
+        # Carousel Choice
+        if 'carousel_choice' in kwargs.keys():
+            self._carousel_choice = kwargs['carousel_choice']
+            self._prev_carousel_choice = kwargs['carousel_choice']
+        else:
+            self._carousel_choice = [0,0]
+            self._prev_carousel_choice = [0,0]
+
+        if 'carousel_option_names' in kwargs.keys():
+            self._carousel_option_names = kwargs['carousel_option_names']
+        else:
+            self._carousel_option_names = kwargs['carousel_option_names']
+
+        # Display Method
+        self.update_carousel()
+
+        # ====================== Timer Creation ======================
+
+        def on_timer(*args, **kwargs): 
+            if hasattr(self.view.wc, 'camera'):
+                self.view.wc.camera.azimuth += self.rotation
+            self.view.wc.canvas.update()
+            TIMESCALING = 1/1
+            SHIFT = 0
+            t = SHIFT + (SHIFT+(args[0].elapsed*TIMESCALING))%((np.shape(self.sources[0].data)[1]/self.metadata['fs'])-SHIFT)
+            timepoint = int(t*self.metadata['fs'])
+            for source in self.sources:
+                source._update_radius(timepoint=timepoint)
+            for connect in self.connect:
+                connect._update_time(timepoint=timepoint)
+            t_str = str(round(t, 3)) + ' s'
+            if not hasattr(self, '_time'):
+                self._time = Text(t_str, parent=self.view.canvas.scene, color='white')
+            else:
+                self._time.text = t_str
+            self._time.font_size = self.view.canvas.size[1] // 100
+            self._time.pos = self.view.canvas.size[0] // 2, 9*self.view.canvas.size[1] // 10
+            self._time.update()
+
+            if self._carousel_choice != self._prev_carousel_choice:
+                self.update_carousel()
+                self._prev_carousel_choice = self._carousel_choice
+
+
+        kw = dict(connect=on_timer, app=CONFIG['VISPY_APP'],
+                  interval='auto', iterations=-1)
+        self._app_timer = app.Timer(**kw)
+        self._app_timer.start()
 
         # ====================== Ui interactions ======================
         UiElements.__init__(self)  # GUI interactions
@@ -150,3 +275,31 @@ class Engram(_PyQtModule, UiInit, UiElements, Visuals, EngramCbar,
         self._fcn_obj_type()
         # Colorbar :
         self._fcn_menu_disp_cbar()
+
+    def update_carousel(self):
+
+        self._labels = [] 
+
+        if self._carousel_display_method == 'text':
+            n_choices = self._carousel_choice[0]
+            which_choice = self._carousel_choice[1]
+            choice = self._carousel_options_inds[n_choices][which_choice]
+            label_choice = self._carousel_options[choice]
+            if len(label_choice) != n_choices:
+                label_choice = [label_choice]
+            for ii,val in enumerate(label_choice):
+                if hasattr(val,'size'):
+                    for jj, string in enumerate(val):
+                        if jj == 0:
+                            full_string = string
+                        else:
+                            full_string = full_string + ' | ' + string
+                else:
+                    full_string = val
+
+                self._labels.append(Text(full_string, parent=self.view.canvas.scene, color='white'))
+                self._labels[-1].font_size = self.view.canvas.size[1] // 200
+                self._labels[-1].pos = self.view.canvas.size[0] // 10, (ii+1)*self.view.canvas.size[1] // 20
+                self._labels[-1].update()
+        else:
+            print('No carousel displayed')

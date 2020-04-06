@@ -248,7 +248,7 @@ class EngramUserMethods(object):
         """
         _engram_update = False
         # Template :
-        if template in self.brain_list():
+        if template in self.engram_list():
             safely_set_cbox(self._engram_template, template,
                             [self._fcn_engram_template])
             _engram_update = True
