@@ -3,6 +3,8 @@
 **Encoding Graphical Representations of Activated Memories**
 is an open-source Python package for developing cognitive neural prostheses.
 
+Promo Video: https://youtu.be/axIlS-cYoX4
+
 [![PyPI badge](https://img.shields.io/pypi/v/engram.svg?logo=python&logoColor=white)](https://pypi.org/project/engram/)
 [![Github badge](https://img.shields.io/badge/github-source_code-blue.svg?logo=github&logoColor=white)](https://github.com/garrettmflynn/engram)
 [![Docs badge](https://img.shields.io/readthedocs/engram/latest.svg?logo=read-the-docs&logoColor=white)](https://readthedocs.org/projects/engram)

@@ -9,6 +9,8 @@ for developing cognitive neural prostheses.
 
 |PyPI badge| |GitHub badge| |Docs badge| |Travis badge| |License badge|
 
+Promo Video: https://youtu.be/axIlS-cYoX4
+
 .. toctree::
     :maxdepth: 2
     :hidden:
