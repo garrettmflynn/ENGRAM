@@ -87,7 +87,8 @@ def engramv1(id):
 
     # Convert binary array into visualizable continuous values
     TRAIL = 50
-    spikes = binary.data.T[0:100000]
+    TIMEPOINTS = 10000000
+    spikes = binary.data.T[0:TIMEPOINTS]
     one_array = np.where(spikes == 1)
     if not not one_array:
         lb_1 = one_array[0]-TRAIL
@@ -372,7 +373,8 @@ def engram(id):
     # Convert binary array into visualizable continuous values
     print('Calculating spike durations')
     TRAIL = 100
-    spikes = binary.data.T[0:10000]
+    TIMEPOINTS = 100000
+    spikes = binary.data.T[0:TIMEPOINTS]
     one_array = np.where(spikes == 1)
     if not not one_array:
         lb_1 = one_array[0]-TRAIL
@@ -410,11 +412,11 @@ def engram(id):
             connect[ind,ind+1:-1] = weight * valid
 
     umin = 0
-    umax = np.max(connect)
+    umax = np.max(spikes)
 
     c_obj = ConnectObj('ConnectObj1', xyz, connect,color_by='strength',
-                    dynamic=(.1, 1.), cmap='gnuplot', vmin=umin + .2,
-                    vmax=umax - .1,line_width=0.1,
+                    dynamic=(.1, 1.), cmap='gnuplot', vmin=umin + .1,
+                    vmax=umax - 1,line_width=0.1,
                     clim=(umin, umax), antialias=True)
 
 
@@ -451,10 +453,11 @@ def position_slicer(intersection_matrices, method=[],ignore_streams=False):
     sources = np.copy(intersection_matrices['sources'])
 
     dims = np.arange(np.shape(indices)[1])
+    dissim = (dims != method)
     if method is []:
         dim_to_remove = dims
     else:
-        dim_to_remove = np.where(dims != method)[0]
+        dim_to_remove = np.where(dissim)[0]
     new_inds = indices
     new_inds[:,dim_to_remove] = 0
     groups, streams_in_groups,n_streams_in_group = np.unique(new_inds,axis=0,return_inverse=True,return_counts=True)
@@ -495,8 +498,17 @@ def position_slicer(intersection_matrices, method=[],ignore_streams=False):
 
     n_sources = sources.size
 
+    if isinstance(dissim, (bool)):
+        full = False
+    elif (dims != method).any():
+        full = False
+    else:
+        full = True
+
+
+
     # Recenter (to canvas) unless all distinctions have been made
-    if (np.asarray([0,1,2]) != np.asarray([0,1,2])).any():
+    if not full:
         if len(np.unique(X)) > 1:
             X = ((X - np.min(X))/(max(X) - min(X))) - .5
         else:
