@@ -62,7 +62,7 @@ html_theme_options = {
 
 html_static_path = ['_static']
 
-html_logo = 'images/engramlogo.png'
+html_logo = 'images/engram_logo.png'
 
 html_show_sphinx = True
 

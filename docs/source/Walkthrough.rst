@@ -23,8 +23,8 @@ A Gentle Introduction to Neural Prostheses
     This section gives additional resources for the curious to explore.
 
 
-.. image:: images/neurons.gif
-    :width: 50%
+.. .. image:: images/neurons.gif
+..     :width: 50%
 
 .. _Intro:
 

@@ -77,7 +77,7 @@ def engramv1(id):
                     intersection_matrices['sources'] = np.append(intersection_matrices['sources'],source_count+intersection_matrices['sources'][k-1][-1]+1,axis=0)
                     intersection_matrices['positions'] = np.append(intersection_matrices['positions'], pos,axis=0)
 
-    xyz, data = position_slicer(intersection_matrices,method='full')
+    xyz = position_slicer(intersection_matrices,method=[1,2,3],ignore_streams=False)
     X = xyz[:,0]
     Y = xyz[:,1]
     Z = xyz[:,2]
@@ -306,6 +306,7 @@ def engramv1(id):
 
     c = Canvas()
     app.run()
+
 def engram(id):
 
     from .gui import Engram

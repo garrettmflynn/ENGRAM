@@ -1,7 +1,7 @@
 [![Promo video](docs/source/images/EngramPromo.png)](https://youtu.be/axIlS-cYoX4)
 *Click on image to view promo video*
 
-**Encoding Graphical Representations of Activated Memories**
+**Encoding Graphical Representations of Activated Memories (ENGRAM)**
 is an open-source Python package for deriving stable. microscale spatiotemporal representations (i.e. binary and continuous sensor readings) for human-scale events (e.g. image labels, movement patterns, etc). As a first use-case, ENGRAM uses depth electrode recordings from human epilepsy patients to derive stable neural representations for specific memory contents (e.g. animals, plants, buildings, etc).
 
 [![PyPI badge](https://img.shields.io/pypi/v/engram.svg?logo=python&logoColor=white)](https://pypi.org/project/engram/)
