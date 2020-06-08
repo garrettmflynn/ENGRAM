@@ -355,10 +355,7 @@ class EngramUserMethods(object):
         --------
         sources_control : Set data to sources and control source's properties.
         """
-        if name is None:
-            obj = self.sources
-        else:
-            obj = self.sources[name]
+        obj = self.sources if name is None else self.sources[name]
         if select in ['all', 'none', 'left', 'right', None]:
             obj.set_visible_sources(select=select)
         elif select in ['inside', 'outside']:
@@ -678,9 +675,8 @@ class EngramUserMethods(object):
             List of objects for which the colorbar can be controlled.
         """
         obj = self.cbqt.cbui.object
-        allitems = [obj.itemText(i) for i in range(
+        return [obj.itemText(i) for i in range(
             obj.count()) if obj.model().item(i).isEnabled()]
-        return allitems
 
     def cbar_autoscale(self, name):
         """Autoscale the colorbar to the best limits.
@@ -717,9 +713,7 @@ class EngramUserMethods(object):
         """
         dict_all = self.cbqt.cbobjs.to_dict(alldicts=True)
         if isinstance(export_only, list):
-            config = {}
-            for k in export_only:
-                config[k] = dict_all[k]
+            config = {k: dict_all[k] for k in export_only}
         else:
             config = dict_all
         if isinstance(filename, str):

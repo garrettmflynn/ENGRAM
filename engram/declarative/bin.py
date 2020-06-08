@@ -22,9 +22,7 @@ class Bin(object):
             self.representation = 'raw'
             self.metadata = metadata
 
-            self.nD_labels = {}
-            self.nD_labels['1D'] = np.asarray(channel_labels)
-
+            self.nD_labels = {'1D': np.asarray(channel_labels)}
             if np.ndim(data) <= 1:
                 length = 0 # Time
                 for source in self.timestamps:

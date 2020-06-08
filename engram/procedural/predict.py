@@ -9,6 +9,4 @@ def predict(model = None,mneme=None):
     out = model.predict(network_input)
 
     choice = np.argmax(out)
-    prediction = mneme.options[choice]
-
-    return prediction
+    return mneme.options[choice]

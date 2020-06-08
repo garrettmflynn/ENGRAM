@@ -40,7 +40,7 @@ class Duration(object):
 
     def makeROIs(self):
         times = self.events[self.metadata['event_of_interest']]
-        
+
         # Only continue if Conts and Bins have the same time vectors
         nconts = len(self.conts)
         nbins = len(self.bins)
@@ -57,18 +57,14 @@ class Duration(object):
                     upper_index = (np.abs(obj.nD_labels['2D'] - (time + bounds[1]))).argmin()
                     lower_index = (np.abs(obj.nD_labels['2D'] - (time + bounds[0]))).argmin()
                     diff_one = upper_index-lower_index
-                    if prev_len:
-                        if prev_len != diff_one:
-                            diff_two = prev_len - diff_one
-                            if diff_one % 2:
-                                center = lower_index+diff_one/2
-                                offset = (prev_len+1)/2
-                                upper_index = center + offset
-                                lower_index = center - offset
-                                upper_index += diff_two
-                            else:
-                                upper_index += diff_two
-
+                    if prev_len and prev_len != diff_one:
+                        diff_two = prev_len - diff_one
+                        if diff_one % 2:
+                            center = lower_index+diff_one/2
+                            offset = (prev_len+1)/2
+                            upper_index = center + offset
+                            lower_index = center - offset
+                        upper_index += diff_two
                     if np.ndim(obj.data) == 2:
                         data = obj.data[:,lower_index:upper_index]
                     elif np.ndim(obj.data) == 3:
@@ -76,7 +72,7 @@ class Duration(object):
                     trials[trial][obj_type].append(self.container_factory(style=obj_type, data=data))
                     trials[trial][obj_type][-1].nD_labels['1D'] = obj.nD_labels['1D']
                     trials[trial][obj_type][-1].nD_labels['2D'] = obj.nD_labels['2D'][lower_index:upper_index]
-                    
+
                     prev_len = upper_index-lower_index
 
         self.trials = trials

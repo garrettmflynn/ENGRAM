@@ -292,7 +292,7 @@ class Engram(_PyQtModule, UiInit, UiElements, Visuals, EngramCbar,
             # Initialize
             if not hasattr(self,'_labels'):
                 self._labels = [Text('', parent=self.view.canvas.scene, color='white')]
-                for count in range(len(self._carousel_options_inds)-2):
+                for _ in range(len(self._carousel_options_inds)-2):
                     self._labels.append(Text('', parent=self.view.canvas.scene, color='white'))
 
             n_choices = self._carousel_choice[0]
@@ -304,10 +304,7 @@ class Engram(_PyQtModule, UiInit, UiElements, Visuals, EngramCbar,
             for ii,val in enumerate(label_choice):
                 if hasattr(val,'size'):
                     for jj, string in enumerate(val):
-                        if jj == 0:
-                            full_string = string
-                        else:
-                            full_string = full_string + ' | ' + string
+                        full_string = string if jj == 0 else full_string + ' | ' + string
                 else:
                     full_string = val
 
@@ -316,7 +313,7 @@ class Engram(_PyQtModule, UiInit, UiElements, Visuals, EngramCbar,
                 self._labels[ii].font_size = self.view.canvas.size[1] // 200
                 self._labels[ii].pos = self.view.canvas.size[0] // 50, (19-ii)*self.view.canvas.size[1] // 20
                 self._labels[ii].update()
-            
+
             for jj in np.arange(len(self._labels)-(ii+1))+(ii+1):
                 self._labels[jj].text = ''
                 self._labels[jj].update()

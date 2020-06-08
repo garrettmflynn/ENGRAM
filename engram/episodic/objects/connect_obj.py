@@ -218,12 +218,12 @@ class ConnectObj(VisbrainObject):
             nnz_x, nnz_y = np.where(~edges.mask)
             indices = np.c_[nnz_x, nnz_y].flatten()
             line_pos = pos[indices, :]
-            if self._color_by == 'strength':
-                nnz_values = edges.compressed()
-                values = np.c_[nnz_values, nnz_values].flatten()
-            elif self._color_by == 'count':
+            if self._color_by == 'count':
                 node_count = Counter(np.ravel([nnz_x, nnz_y]))
                 values = np.array([node_count[k] for k in indices])
+            elif self._color_by == 'strength':
+                nnz_values = edges.compressed()
+                values = np.c_[nnz_values, nnz_values].flatten()
         elif self._color_by == 'causal':
             idx = np.array(np.where(~edges.mask)).T
             # If the array is not symetric, the line needs to be drawn between

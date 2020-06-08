@@ -11,11 +11,11 @@ def select(shader="engramv1",id=None):
         "shadertoy" : shadertoy,
         "oscilloscope" : oscilloscope,
     }
-    
+
     # Get the function from switcher dictionary
     func = selection.get(shader, lambda: "Invalid event parser")
     # Execute the function
-    if (shader != 'engramv1') and (shader != 'engram'):
+    if shader not in ['engramv1', 'engram']:
         return func()
     else:
         return func(id)
