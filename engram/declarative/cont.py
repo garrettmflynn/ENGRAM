@@ -24,8 +24,7 @@ class Cont(object):
             self.representation = 'raw'
             self.metadata = metadata
 
-            self.nD_labels = {}
-            self.nD_labels['1D'] = np.asarray(channel_labels)
+            self.nD_labels = {'1D': np.asarray(channel_labels)}
             self.nD_labels['2D'] = np.arange(0,np.size(self.data, 1))/self.metadata['fs'] # Time
             self.nD_labels['3D'] = None # ???
 
@@ -133,13 +132,13 @@ class Cont(object):
 
                 for channel in range(len(self.data)):
                     self.data[channel,:,:] = (self.data[channel] - freqMu[channel])/freqSig[channel]
-            elif np.ndim(self.data) == 2 or 1:
+            elif np.ndim(self.data) == 2:
                 freqMu = np.mean(self.data,axis=0)
                 freqSig = np.std(self.data,axis=0)
                 self.data = (self.data - freqMu)/freqSig
             else:
                 print('Input array dimensions not supported for normalization.')
-        
+
         return self
 
     def resample(self,fs):

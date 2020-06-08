@@ -88,9 +88,7 @@ def cnn(shape):
 def custom(shape):
     import custommodelconfig
 
-    model = tf.keras.models.model_from_config(
+    return tf.keras.models.model_from_config(
     custommodelconfig, custom_objects=None
     )
-
-    return model
 

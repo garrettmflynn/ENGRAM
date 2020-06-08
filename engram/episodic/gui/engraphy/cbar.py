@@ -51,8 +51,7 @@ class EngramCbar(object):
                 obj._minmaxfcn = self._fcn_minmax_pic(k.name)
 
         # ________ Default ________
-        if all([k.name is None for k in (self.sources, self.pic,
-                                         self.connect)]):
+        if all(k.name is None for k in (self.sources, self.pic, self.connect)):
             cbproj = CbarBase()
             self.cbobjs.add_object('default', cbproj)
 

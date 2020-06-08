@@ -31,19 +31,19 @@ def train(model_type='CNN',in_matrix=None,labels=None):
     # Getting training data
     X_train = [ in_matrix[i] for i in train_inds ]
     for cat in categories:
-        if not y_train_bin:
-            y_train_bin = [labels[cat][train_inds]]
-        else:
+        if y_train_bin:
             y_train_bin.append(labels[cat][train_inds])
-  
+
+        else:
+            y_train_bin = [labels[cat][train_inds]]
     # Getting test data
     X_val = [ in_matrix[i] for i in test_inds ]
     for cat in categories:
-        if not y_val_bin:
-            y_val_bin = [labels[cat][test_inds]]
-        else:
+        if y_val_bin:
             y_val_bin.append(labels[cat][test_inds])
 
+        else:
+            y_val_bin = [labels[cat][test_inds]]
     # splitting data into training and testing indices
     train_ds = create_dataset(X_train, y_train_bin)
     val_ds = create_dataset(X_val, y_val_bin)
@@ -59,11 +59,7 @@ def train(model_type='CNN',in_matrix=None,labels=None):
     print("saved:")
     print(MODEL_NAME)
 
-    training_params = {}
-    training_params['categories'] = categories
-    training_params['train_inds'] = train_inds
-    training_params['train_inds'] = test_inds
-
+    training_params = {'categories': categories, 'train_inds': test_inds}
     return model, training_params
 
 

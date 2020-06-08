@@ -77,13 +77,14 @@ class UiObjects(object):
         """Get the select object."""
         idx_type = self._obj_type_lst.currentIndex()
         name = self._obj_name_lst.currentText()
-        if name and idx_type == 4:  # Sources
-            return self.sources[name]
-        elif name and idx_type == 5:  # Connectivity
-            return self.connect[name]
-        elif name and idx_type == 6:  # Time-series
-            return self.tseries[name]
-        elif name and idx_type == 7:  # Pictures
-            return self.pic[name]
-        elif name and idx_type == 8:  # Vectors
-            return self.vectors[name]
+        if name:
+            if idx_type == 4:  # Sources
+                return self.sources[name]
+            elif idx_type == 5:  # Connectivity
+                return self.connect[name]
+            elif idx_type == 6:  # Time-series
+                return self.tseries[name]
+            elif idx_type == 7:  # Pictures
+                return self.pic[name]
+            elif idx_type == 8:  # Vectors
+                return self.vectors[name]

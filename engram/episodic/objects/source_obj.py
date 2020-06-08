@@ -130,8 +130,8 @@ class SourceObj(VisbrainObject):
         pos = xyz if sh[1] == 3 else np.c_[xyz, np.full((len(self),), _z)]
         logger.info('    %i sources detected' % self._n_sources)
         # Radius min and max :
-        assert all([isinstance(k, (int, float)) for k in (
-            radius_min, radius_max)])
+        assert all(isinstance(k, (int, float)) for k in (
+                radius_min, radius_max))
         radius_max = max(radius_min, radius_max)
         self._radius_min, self._radius_max = radius_min, radius_max
         self._mask_radius = mask_radius
@@ -294,7 +294,7 @@ class SourceObj(VisbrainObject):
         elif isinstance(self._color, np.ndarray):  # color = [[0, 0, 0], ...]
             csh = self._color.shape
             assert (csh[0] == len(self)) and (csh[1] >= 3)
-            if self._color.shape[1] == 3:  # RGB
+            if csh[1] == 3:  # RGB
                 self._color = np.c_[self._color, np.full(len(self),
                                                          self._alpha)]
             bg_color = self._color.copy()
@@ -400,16 +400,16 @@ class SourceObj(VisbrainObject):
         if isinstance(roi_obj, (str, list, tuple)):
             if isinstance(roi_obj, str):
                 roi_obj = [roi_obj]
-            if all([isinstance(k, str) for k in roi_obj]):
+            if all(isinstance(k, str) for k in roi_obj):
                 roi_obj = [RoiObj(k) for k in roi_obj if k in proi]
         elif isinstance(roi_obj, RoiObj):
             roi_obj = [roi_obj]
-        assert all([isinstance(k, RoiObj) for k in roi_obj])
+        assert all(isinstance(k, RoiObj) for k in roi_obj)
         # Convert predefined ROI into RoiObj objects :
         logger.info("    Analyse source's locations using the %s "
                     "atlas" % ', '.join([k.name for k in roi_obj]))
         if isinstance(roi_obj, (list, tuple)):
-            test_r = all([k in proi or isinstance(k, RoiObj) for k in roi_obj])
+            test_r = all(k in proi or isinstance(k, RoiObj) for k in roi_obj)
             if not test_r:
                 raise TypeError("roi_obj should either be 'brodmann', 'aal', "
                                 "'talairach' or a list or RoiObj objects.")
@@ -888,9 +888,7 @@ class CombineSources(CombineObjects):
     def analyse_sources(self, *args, **kwargs):
         """See sources doc."""
         import pandas as pd
-        df = []
-        for k in self:
-            df.append(k.analyse_sources(*args, **kwargs))
+        df = [k.analyse_sources(*args, **kwargs) for k in self]
         return pd.concat(df, ignore_index=True)
 
     # ----------- _XYZ -----------
@@ -969,9 +967,7 @@ class CombineSources(CombineObjects):
     @property
     def is_masked(self):
         """Get the is_masked value."""
-        is_masked = []
-        for k in self:
-            is_masked.append(k.is_masked)
+        is_masked = [k.is_masked for k in self]
         return any(is_masked)
 
     # ----------- VISIBLE_AND_NOT_MASKED -----------
